@@ -60,9 +60,33 @@ class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     holder_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(255), nullable=False)
+    postings = db.relationship('Posting', backref='account', lazy=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return f'<Account {self.name}>'
 
+
+class Journal(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String(255), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    postings = db.relationship('Posting', backref='journal_entry', lazy=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Journal {self.type} {self.id}>'
+
+
+class Posting(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
+    journal_id = db.Column(db.Integer, db.ForeignKey('journal.id'), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Posting: {self.amount} to {self.account} for {self.journal_entry}>'
