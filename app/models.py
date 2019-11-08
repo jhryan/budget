@@ -62,7 +62,7 @@ class Account(db.Model):
     name = db.Column(db.String(255), nullable=False)
     postings = db.relationship('Posting', backref='account', lazy=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
         return f'<Account {self.name}>'
@@ -70,11 +70,12 @@ class Account(db.Model):
 
 class Journal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String(255), nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+    payee = db.Column(db.String(255))
+    description = db.Column(db.String(255))
     postings = db.relationship('Posting', backref='journal_entry', lazy=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
         return f'<Journal {self.type} {self.id}>'
@@ -86,7 +87,7 @@ class Posting(db.Model):
     journal_id = db.Column(db.Integer, db.ForeignKey('journal.id'), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
         return f'<Posting: {self.amount} to {self.account} for {self.journal_entry}>'
