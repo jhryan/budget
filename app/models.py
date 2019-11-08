@@ -58,14 +58,22 @@ def load_user(id):
 
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    holder_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(255), nullable=False)
+    type_id = db.Column(db.Integer, db.ForeignKey('account_type.id'), nullable=False)
+    type = db.relationship('AccountType')
+    holder_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
     postings = db.relationship('Posting', backref='account', lazy=True)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
         return f'<Account {self.name}>'
+
+class AccountType(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String(25), nullable=False)
 
 
 class Journal(db.Model):
