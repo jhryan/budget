@@ -94,9 +94,19 @@ class Posting(db.Model):
     journal_id = db.Column(db.Integer, db.ForeignKey('journal.id'), nullable=False)
 
     amount = db.Column(db.Numeric(precision=38, scale=28), nullable=False)
+    asset_type_id = db.Column(db.Integer, db.ForeignKey('asset_type.id'), nullable=False)
+    asset_type = db.relationship('AssetType')
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
         return f'<Posting: {self.amount} to {self.account} for {self.journal_entry}>'
+
+
+class AssetType(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(32), nullable=False)
+
+    def __repr__(self):
+        return self.name

@@ -1,6 +1,7 @@
 from app import create_app
 from app import db
 from app.models import Account
+from app.models import AssetType
 from app.models import Journal
 from app.models import Posting
 from app.models import User
@@ -14,6 +15,7 @@ def make_shell_context():
     return {
         'db': db, 
         'Account': Account, 
+        'AssetType': AssetType,
         'Journal': Journal,
         'Posting': Posting,
         'User': User
