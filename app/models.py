@@ -78,7 +78,9 @@ class Journal(db.Model):
     date = db.Column(db.DateTime, default=datetime.utcnow)
     payee = db.Column(db.String(255))
     description = db.Column(db.String(255))
+
     postings = db.relationship('Posting', backref='journal_entry', lazy=True)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -90,7 +92,9 @@ class Posting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
     journal_id = db.Column(db.Integer, db.ForeignKey('journal.id'), nullable=False)
-    amount = db.Column(db.Float, nullable=False)
+
+    amount = db.Column(db.Numeric(precision=38, scale=28), nullable=False)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
