@@ -59,8 +59,7 @@ def load_user(id):
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
-    type_id = db.Column(db.Integer, db.ForeignKey('account_type.id'), nullable=False)
-    type = db.relationship('AccountType')
+    type = db.Column(db.String(9), db.CheckConstraint("type IN ('Asset', 'Liability', 'Equity', 'Income', 'Expense')", name='types'), nullable=False)
     holder_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     
     postings = db.relationship('Posting', backref='account', lazy=True)
@@ -70,10 +69,6 @@ class Account(db.Model):
 
     def __repr__(self):
         return f'<Account {self.name}>'
-
-class AccountType(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String(25), nullable=False)
 
 
 class Journal(db.Model):
