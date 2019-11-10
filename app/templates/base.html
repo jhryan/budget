@@ -4,6 +4,12 @@
     {% if title %}{{ title }} - Budget{% else %}Welcome to Budget{% endif %}
 {% endblock %}
 
+{% block head %}
+    {{ super() }}
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+{% endblock %}
+
 {% block navbar %}
     <nav class="navbar navbar-default">
         <div class="container">
@@ -51,4 +57,11 @@
 {% block scripts %}
     {{ super() }}
     {{ moment.include_moment() }}
+    <!-- Menu Toggle Script -->
+    <script>
+        $("#menu-toggle").click(function(e) {
+          e.preventDefault();
+          $("#wrapper").toggleClass("toggled");
+        });
+    </script>
 {% endblock %}}
