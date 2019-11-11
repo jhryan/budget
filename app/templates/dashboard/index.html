@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block navbar %}
+{# clear out upper navbar #}
+{% endblock %}
+
 {% block app_content %}
     <div class="d-flex" id="wrapper">
 
@@ -60,5 +64,16 @@
 
     </div>
     <!-- /#wrapper -->
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <!-- Menu Toggle Script -->
+    <script>
+        $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+        });
+    </script>
 {% endblock %}
     
