@@ -1,11 +1,25 @@
-{% extends "base.html" %}
-{% import 'bootstrap/wtf.html' as wtf %}
+{% extends 'base.html' %}
+{% set active_page = 'auth.register' %}
+{% from '_formhelpers.html' import quick_form %}
+
+
+{% block navbar %}
+{# clear out upper navbar #}
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+{% endblock %}
 
 {% block app_content %}
-    <h1>Register</h1>
-    <div class="row">
-        <div class="col-md-4">
-            {{ wtf.quick_form(form) }}
-        </div>
-    </div>
+    <form action="" method="post" class="form-register text-center" novalidate>
+        {{ form.hidden_tag() }}
+        <img class="mb-4" src="{{ url_for('static', filename='img/credit_cards.svg') }}" alt="" width="72" height="72">
+        <h1 class="h3 mb-3 font-weight-normal">Register</h1>
+
+        {{ quick_form(form) }}
+    </form>
 {% endblock %}
+

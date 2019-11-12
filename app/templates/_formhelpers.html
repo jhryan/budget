@@ -1,0 +1,40 @@
+{% macro form_group(field, with_label, placeholder) -%}
+    <div class="form-group required">
+        {% if with_label %}
+            <label for="{{ field.id }}" class="form-control-label">
+                {{ field.label }}
+            </label>
+        {% endif %}
+        {% if field.errors %}
+            {{ field(class_="form-control is-invalid", placeholder=placeholder) }}
+        {% else %}
+            {{ field(class_="form-control", placeholder=placeholder) }}
+        {% endif %}
+        {% if field.errors %}
+            <div class="invalid-feedback">
+                {{ field.errors[0] }}
+            </div>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro quick_form(form) -%}
+    {% set class_ = kwargs.pop('class_', '') %}
+    {% set with_label = kwargs.pop('with_label', False) %}
+    <form class="{{ class_ }}" method="post" action="">
+    {% for field in form %}
+        {% set placeholder = '' %}
+        {% if not with_label %}
+            {% set placeholder = field.label.text %}
+        {% endif %}
+
+        {% if field.type in ('HiddenField', 'CSRFTokenField') %}
+            {{ field() }}
+        {% elif field.type == 'SubmitField' %}
+            {{ field(class_="btn btn-lg btn-primary btn-block") }}
+        {% else %}
+            {{ form_group(field, with_label, placeholder) }}
+        {% endif %}
+    {% endfor %}
+    </form>
+{% endmacro %}
