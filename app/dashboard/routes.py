@@ -8,6 +8,7 @@ from flask_login import login_required
 
 from app import db
 from app.dashboard import bp
+from app.models import Account
 
 
 @bp.before_app_request
@@ -21,6 +22,7 @@ def before_request():
 @bp.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-    return render_template('dashboard/index.html', title='Dashboard')
+    accounts = [Account(name='Account 1'), Account(name='Account 2'), Account(name='Account 3')]
+    return render_template('dashboard/index.html', title='Dashboard', budget_name='Budget', email='Email', accounts=accounts)
 
 

@@ -12,8 +12,8 @@
                     <div class="dropdown mb-1">
                         <button class="btn btn-secondary btn-block rounded-0 dropdown-toggle d-flex justify-content-between align-items-center" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <dl class="mb-0 text-left">
-                                <dt>Budget</dt>
-                                <dd class="mb-0 small">Email</dd>
+                                <dt>{{ budget_name }}</dt>
+                                <dd class="mb-0 small">{{ email }}</dd>
                             </dl>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -56,9 +56,11 @@
                                 Budget
                             </a>
                             <div class="collapse show" id="budget-accordion">
-                                <a href="#" class="nav-link" data-parent="#budget-accordion"><span class="pl-4">Account 1</span></a>
-                                <a href="#" class="nav-link" data-parent="#budget-accordion"><span class="pl-4">Account 2</span></a>
-                                <a href="#" class="nav-link" data-parent="#budget-accordion"><span class="pl-4">Account 3</span></a>
+                                {% if accounts %}
+                                    {% for account in accounts %}
+                                    <a href="#" class="nav-link" data-parent="#budget-accordion"><span class="pl-4">{{ account.name }}</span></a>
+                                    {% endfor %}
+                                {% endif %}
                             </div>
                         </li>
                     </ul>
