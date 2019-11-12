@@ -59,7 +59,7 @@
         {%- endblock navbar %}
 
         {% block content -%}
-            <div class="w-screen">
+            <div class="container-fluid">
                 {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     {% for message in messages %}
