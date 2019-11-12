@@ -1,14 +1,22 @@
-{% macro form_group(field, with_label, placeholder) -%}
+{% macro form_group(field, quick_form_label) -%}
     <div class="form-group required">
-        {% if with_label %}
+        {% set class_ = kwargs.pop('class_', '') %}
+        {% set with_label = kwargs.pop('with_label', False) %}
+        {% set placeholder = '' %}
+        {% if not with_label and not quick_form_label %}
+            {% set placeholder = field.label.text %}
+        {% endif %}
+        {% if with_label or quick_form_label %}
             <label for="{{ field.id }}" class="form-control-label">
                 {{ field.label }}
             </label>
         {% endif %}
         {% if field.errors %}
-            {{ field(class_="form-control is-invalid", placeholder=placeholder) }}
+            {% set class_ = class_ + " form-control is-invalid" %}
+            {{ field(class_=class_, placeholder=placeholder) }}
         {% else %}
-            {{ field(class_="form-control", placeholder=placeholder) }}
+            {% set class_ = class_ + " form-control" %}
+            {{ field(class_=class_, placeholder=placeholder) }}
         {% endif %}
         {% if field.errors %}
             <div class="invalid-feedback">
@@ -23,17 +31,12 @@
     {% set with_label = kwargs.pop('with_label', False) %}
     <form class="{{ class_ }}" method="post" action="">
     {% for field in form %}
-        {% set placeholder = '' %}
-        {% if not with_label %}
-            {% set placeholder = field.label.text %}
-        {% endif %}
-
         {% if field.type in ('HiddenField', 'CSRFTokenField') %}
             {{ field() }}
         {% elif field.type == 'SubmitField' %}
             {{ field(class_="btn btn-lg btn-primary btn-block") }}
         {% else %}
-            {{ form_group(field, with_label, placeholder) }}
+            {{ form_group(field, with_label) }}
         {% endif %}
     {% endfor %}
     </form>
