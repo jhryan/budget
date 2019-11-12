@@ -12,16 +12,40 @@
 {% endblock %}
 
 {% block app_content %}
-    <form action="" method="post" class="form-signin text-center">
+    <form action="" method="post" class="form-signin text-center" novalidate>
         {{ form.hidden_tag() }}
         <img class="mb-4" src="{{ url_for('static', filename='img/credit_cards.svg') }}" alt="" width="72" height="72">
         <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
 
-        {{ form.username.label(class="sr-only") }}
-        {{ form.username(size=32, class="form-control", placeholder="Username") }}
+        <div class="form-group required">
+            {{ form.username.label(class="sr-only") }}
+            {% if form.username.errors %}
+                {{ form.username(size=32, class_="form-control is-invalid", placeholder=form.username.label.text) }}
+            {% else %}
+                {{ form.username(size=32, class_="form-control", placeholder=form.username.label.text) }}
+            {% endif %}
 
-        {{ form.password.label(class="sr-only") }}
-        {{ form.password(size=32, class="form-control", placeholder="Password") }}
+            {{ form.password.label(class="sr-only") }}
+            {% if form.password.errors %}
+                {{ form.password(size=32, class_="form-control is-invalid", placeholder=form.password.label.text) }}
+            {% else %}
+                {{ form.password(size=32, class_="form-control", placeholder=form.password.label.text) }}
+            {% endif %}
+            
+
+            {% if form.username.errors %}
+                <div class="invalid-feedback">
+                    {{ form.username.label.text }}: {{ form.username.errors[0] }}
+                </div>
+            {% endif %}
+
+            {% if form.password.errors %}
+                <div class="invalid-feedback">
+                    {{ form.password.label.text }}: {{ form.password.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+        
 
         <div class="checkbox mb-3">
             {{ form.remember_me() }} {{ form.remember_me.label }}
