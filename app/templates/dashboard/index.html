@@ -11,7 +11,10 @@
                 <div class="sidebar-sticky">
                     <div class="dropdown mb-1">
                         <button class="btn btn-secondary btn-block rounded-0 dropdown-toggle d-flex justify-content-between align-items-center" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Dashboard
+                            <dl class="mb-0 text-left">
+                                <dt>Budget</dt>
+                                <dd class="mb-0 small">Email</dd>
+                            </dl>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <a class="dropdown-item" href="#">New Budget</a>
@@ -28,20 +31,8 @@
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a class="nav-link active" href="#">
-                                <span data-feather="file"></span>
-                                Orders <span class="sr-only">(current)</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span data-feather="shopping-cart"></span>
-                                Products
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span data-feather="users"></span>
-                                Customers
+                                <span data-feather="mail"></span>
+                                Budget <span class="sr-only">(current)</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -52,44 +43,26 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">
-                                <span data-feather="layers"></span>
-                                Integrations
+                                <span data-feather="book-open"></span>
+                                All Accounts
                             </a>
                         </li>
                     </ul>
-
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>Saved reports</span>
-                        <a class="d-flex align-items-center text-muted" href="#">
-                            <span data-feather="plus-circle"></span>
-                        </a>
-                    </h6>
-                    <ul class="nav flex-column mb-2">
+                    <hr/>
+                    <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span data-feather="file-text"></span>
-                                Current month
+                            <a href="#budget-accordion" class="nav-link expander" data-toggle="collapse" aria-expanded="true">
+                                <span data-feather="minus-circle"></span>
+                                Budget
                             </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span data-feather="file-text"></span>
-                                Last quarter
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span data-feather="file-text"></span>
-                                Social engagement
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span data-feather="file-text"></span>
-                                Year-end sale
-                            </a>
+                            <div class="collapse show" id="budget-accordion">
+                                <a href="#" class="nav-link" data-parent="#budget-accordion"><span class="pl-4">Account 1</span></a>
+                                <a href="#" class="nav-link" data-parent="#budget-accordion"><span class="pl-4">Account 2</span></a>
+                                <a href="#" class="nav-link" data-parent="#budget-accordion"><span class="pl-4">Account 3</span></a>
+                            </div>
                         </li>
                     </ul>
+                    <hr/>
                 </div>
             </nav>
 
@@ -97,4 +70,21 @@
             </main>
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+
+    {{ super () }}
+
+    <script>
+        $('.expander').click (function () {
+            if ( $(this).children('svg.feather.feather-minus-circle').length) {
+                $(this).children('svg.feather.feather-minus-circle').replaceWith(feather.icons['plus-circle'].toSvg());
+            }
+            else {
+                $(this).children('svg.feather.feather-plus-circle').replaceWith(feather.icons['minus-circle'].toSvg());
+            }
+        })
+    </script>
+
 {% endblock %}

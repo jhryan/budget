@@ -43,3 +43,12 @@
   min-width: 100%;
 }
 
+.sidebar .collapse a:hover, 
+.sidebar .collapse a:focus {
+  background-color: #dae0e5;
+}
+
+.sidebar hr {
+  margin-top: .25rem;
+  margin-bottom: .25rem;
+}
