@@ -5,71 +5,96 @@
 {% endblock %}
 
 {% block app_content %}
-    <div class="d-flex" id="wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-lg-block bg-light sidebar">
+                <div class="sidebar-sticky">
+                    <div class="dropdown mb-1">
+                        <button class="btn btn-secondary btn-block rounded-0 dropdown-toggle d-flex justify-content-between align-items-center" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Dashboard
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="#">New Budget</a>
+                            <a class="dropdown-item" href="#">Open Budget</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Budget Settings</a>
+                            <a class="dropdown-item" href="#">Manage Payees</a>
+                            <a class="dropdown-item" href="#">Export Budget</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Profile</a>
+                            <a class="dropdown-item" href="#">Log Out</a>
+                        </div>
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">
+                                <span data-feather="file"></span>
+                                Orders <span class="sr-only">(current)</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span data-feather="shopping-cart"></span>
+                                Products
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span data-feather="users"></span>
+                                Customers
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span data-feather="bar-chart-2"></span>
+                                Reports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span data-feather="layers"></span>
+                                Integrations
+                            </a>
+                        </li>
+                    </ul>
 
-        <!-- Sidebar -->
-        <div class="bg-light border-right" id="sidebar-wrapper">
-          <div class="sidebar-heading dropdown">
-            <a class="d-flex justify-content-between align-items-center dropdown-toggle list-group-item-action" href="#" role="button" id="sidebar-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <dl class="mb-0">
-                <dt>Budget</dt>
-                <dd class="mb-0 small">Email</dd>
-              </dl>
-            </a>
-            <div class="dropdown-menu" aria-labelledby="sidebar-dropdown">
-              <a class="dropdown-item" href="#">New Budget</a>
-              <a class="dropdown-item" href="#">Open Budget</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Budget Settings</a>
-              <a class="dropdown-item" href="#">Manage Payees</a>
-              <a class="dropdown-item" href="#">Export Budget</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Profile</a>
-              <a class="dropdown-item" href="#">Log Out</a>
-            </div>
-          </div>
-          <div class="list-group list-group-flush">
-            <a href="#" class="list-group-item list-group-item-action bg-light">Budget</a>
-            <a href="#" class="list-group-item list-group-item-action bg-light">Accounts</a>
-            <a href="#" class="list-group-item list-group-item-action bg-light">Reports</a>
-            <a href="#budget-accordion" class="list-group-item list-group-item-action bg-light" data-toggle="collapse" data-parent="#sidebar-wrapper">Budget</a>
-            <div class="collapse show" id="budget-accordion">
-                <a href="#" class="list-group-item list-group-item-action bg-light" data-parent="#budget-accordion">Account 1</a>
-                <a href="#" class="list-group-item list-group-item-action bg-light" data-parent="#budget-accordion">Account 2</a>
-                <a href="#" class="list-group-item list-group-item-action bg-light" data-parent="#budget-accordion">Account 3</a>
-            </div>
-          </div>
-        </div>
-        <!-- /#sidebar-wrapper -->
-    
-        <!-- Page Content -->
-        <div id="page-content-wrapper">
-    
-          <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-            <button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
-          </nav>
-    
-          <div class="container-fluid">
-            <h1 class="mt-4">Simple Sidebar</h1>
-            <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will change.</p>
-            <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>. The top navbar is optional, and just for demonstration. Just create an element with the <code>#menu-toggle</code> ID which will toggle the menu when clicked.</p>
-          </div>
-        </div>
-        <!-- /#page-content-wrapper -->
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Saved reports</span>
+                        <a class="d-flex align-items-center text-muted" href="#">
+                            <span data-feather="plus-circle"></span>
+                        </a>
+                    </h6>
+                    <ul class="nav flex-column mb-2">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span data-feather="file-text"></span>
+                                Current month
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span data-feather="file-text"></span>
+                                Last quarter
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span data-feather="file-text"></span>
+                                Social engagement
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span data-feather="file-text"></span>
+                                Year-end sale
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
 
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            </main>
+        </div>
     </div>
-    <!-- /#wrapper -->
 {% endblock %}
-
-{% block scripts %}
-    {{ super() }}
-
-    <!-- Menu Toggle Script -->
-    <script>
-      $("#menu-toggle").click(function(e) {
-      e.preventDefault();
-      $("#wrapper").toggleClass("toggled");
-      });
-    </script>
-{% endblock %}
-    
