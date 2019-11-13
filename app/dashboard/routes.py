@@ -32,6 +32,6 @@ def budget(username):
         abort(401)
     budget = Budget.query.filter_by(user=user).first()
     accounts = Account.query.filter_by(budget=budget).all()
-    return render_template('dashboard/index.html', title='Dashboard', budget_name=budget.name, email=user.email, accounts=accounts)
+    return render_template('dashboard/budget.html', title='Dashboard', budget_name=budget.name, email=user.email, accounts=accounts)
 
 
