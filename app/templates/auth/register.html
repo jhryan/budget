@@ -13,13 +13,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
 {% endblock %}
 
-{% block app_content %}
-    <form action="" method="post" class="form-register text-center" novalidate>
-        {{ form.hidden_tag() }}
-        <img class="mb-4" src="{{ url_for('static', filename='img/credit_cards.svg') }}" alt="" width="72" height="72">
-        <h1 class="h3 mb-3 font-weight-normal">Register</h1>
-
-        {{ quick_form(form) }}
-    </form>
+{% block content %}
+    {{ quick_form(form, class_="form-register", form_banner=True, form_title="Register") }}
 {% endblock %}
 
