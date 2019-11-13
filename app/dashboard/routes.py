@@ -21,16 +21,24 @@ def before_request():
         db.session.commit()
 
 
-@bp.route('/<username>/budget')
+@bp.route('/<username>/budget/', defaults={'budget_id': None})
+@bp.route('/<username>/budget/<int:budget_id>')
 @login_required
-def budget(username):
+def budget(username, budget_id):
     user = User.query.filter_by(username=username).first()
     if user is None:
         flash(f'User {username} not found.')
         return redirect(url_for('main.index'))
     if user != current_user:
         abort(401)
-    budget = Budget.query.filter_by(user=user).first()
+
+    if budget_id is None:
+        budget = Budget.query.filter_by(user=user).first()
+    else:
+        budget = Budget.query.filter_by(user=user, id=budget_id).first()
+    if budget is None:
+        abort(404)
+    
     accounts = Account.query.filter_by(budget=budget).all()
     return render_template('dashboard/budget.html', title='Dashboard', budget_name=budget.name, email=user.email, accounts=accounts)
 
