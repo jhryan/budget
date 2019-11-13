@@ -61,9 +61,13 @@
         </div>
 
         <div class="checkbox mb-3">
-            {{ form.remember_me() }} {{ form.remember_me.label }}
+            {{ form.remember_me() }} {{ form.remember_me.label }} <span class="mx-1">&middot;</span> <a href="{{ url_for('auth.reset_password_request') }}"> {{ 'Forget Password?' }}</a>
         </div>
 
         {{ form.submit(class="btn btn-lg btn-primary btn-block") }}
+
+        <div class="text-center mt-5">
+            <p>{{ 'New User?' }} <a href="{{ url_for('auth.register') }}">{{ 'Click to Register!' }}</a></p>
+        </div>
     </form>
 {% endblock %}
