@@ -20,7 +20,6 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
 
     budgets = db.relationship('Budget', backref='user', lazy=True)
-    accounts = db.relationship('Account', backref='holder', lazy=True)
     
     def __repr__(self):
         return f'<User {self.username}>'
@@ -75,8 +74,6 @@ class Account(db.Model):
 
     parent_id = db.Column(db.Integer, db.ForeignKey('account.id'))
     children = db.relationship('Account', backref=db.backref('parent', remote_side=[id]), lazy=True)
-    
-    holder_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     
     postings = db.relationship('Posting', backref='account', lazy=True)
 
