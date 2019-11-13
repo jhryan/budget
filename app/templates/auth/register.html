@@ -10,10 +10,11 @@
 {% block styles %}
     {{ super() }}
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/full_page_form.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/floating_labels.css') }}">
 {% endblock %}
 
 {% block content %}
-    {{ quick_form(form, class_="form-register", form_banner=True, form_title="Register") }}
+    {{ quick_form(form, class_="form-full-page", form_banner=True, form_title="Register") }}
 {% endblock %}
 

@@ -8,11 +8,12 @@
 {% block styles %}
     {{ super() }}
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/full_page_form.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/floating_labels.css') }}">
 {% endblock %}
 
 {% block content %}
-    <form action="" method="post" class="form-signin" novalidate>
+    <form action="" method="post" class="form-full-page" novalidate>
         {{ form.hidden_tag() }}
 
         <div class="text-center mb-4">
