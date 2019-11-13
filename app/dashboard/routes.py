@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from flask import abort
 from flask import redirect
 from flask import render_template
 from flask import url_for
@@ -9,6 +10,8 @@ from flask_login import login_required
 from app import db
 from app.dashboard import bp
 from app.models import Account
+from app.models import Budget
+from app.models import User
 
 
 @bp.before_app_request
@@ -18,11 +21,17 @@ def before_request():
         db.session.commit()
 
 
-@bp.route('/', methods=['GET', 'POST'])
-@bp.route('/index', methods=['GET', 'POST'])
+@bp.route('/<username>/budget')
 @login_required
-def index():
-    accounts = [Account(name='Account 1'), Account(name='Account 2'), Account(name='Account 3')]
-    return render_template('dashboard/index.html', title='Dashboard', budget_name='Budget', email='Email', accounts=accounts)
+def budget(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash(f'User {username} not found.')
+        return redirect(url_for('main.index'))
+    if user != current_user:
+        abort(401)
+    budget = Budget.query.filter_by(user=user).first()
+    accounts = Account.query.filter_by(budget=budget).all()
+    return render_template('dashboard/index.html', title='Dashboard', budget_name=budget.name, email=user.email, accounts=accounts)
 
 
