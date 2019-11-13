@@ -20,6 +20,14 @@
             <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
         </div>
 
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-info" role="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
         <div class="form-label-group">
             {% if form.username.errors %}
                 {{ form.username(size=32, class_="form-control is-invalid", placeholder=form.username.label.text) }}
