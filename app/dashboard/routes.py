@@ -16,10 +16,7 @@ from app.models import User
 
 def authenticate(username, budget_id):
     user = User.query.filter_by(username=username).first()
-    if user is None:
-        flash(f'User {username} not found.')
-        return redirect(url_for('main.index'))
-    if user != current_user:
+    if user is None or user != current_user:
         abort(401)
 
     if budget_id is None:
@@ -34,7 +31,7 @@ def authenticate(username, budget_id):
     
     accounts = Account.query.filter_by(budget=budget).all()
     return user, budget, accounts
-    
+
 
 @bp.route('/<username>/budget/', defaults={'budget_id': None})
 @bp.route('/<username>/budget/<int:budget_id>')
