@@ -46,6 +46,9 @@
                             </li>
                         {% else %}
                             <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('dashboard.budget', username=current_user.username, budget_id=None) }}">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link {% if active_page == 'main.user' %} active {% endif %}" href="{{ url_for('main.user', username=current_user.username) }}">Profile</a>
                             </li>
                             <li class="nav-item">
