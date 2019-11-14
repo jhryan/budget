@@ -1,0 +1,15 @@
+{% extends 'dashboard/base.html' %}
+
+{% if account is not none %}
+    {% set active_page = 'dashboard.accounts.%d' % account.id -%}
+{% else %}
+    {% set active_page = 'dashboard.accounts' -%}
+{% endif %}
+
+{% block dashboard_content %}
+    {% if account is not none %}
+        <h1>{{ account.name }} Page</h1>
+    {% else %}
+        <h1>Accounts Page</h1>
+    {% endif %}
+{% endblock %}

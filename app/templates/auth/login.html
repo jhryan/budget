@@ -1,17 +1,74 @@
 {% extends 'base.html' %}
-{% import 'bootstrap/wtf.html' as wtf %}
+{% set active_page = "auth.login" %}
 
-{% block app_content %}
-    <h1>Sign In</h1>
-    <div class="row">
-        <div class="col-md-4">
-            {{ wtf.quick_form(form) }}
+{% block navbar %}
+{# clear out upper navbar #}
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/full_page_form.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/floating_labels.css') }}">
+{% endblock %}
+
+{% block content %}
+    <form action="" method="post" class="form-full-page" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="text-center mb-4">
+            <img class="mb-4" src="{{ url_for('static', filename='img/credit_cards.svg') }}" alt="" width="72" height="72">
+            <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
         </div>
-    </div>
-    <br>
-    <p>New User? <a href="{{ url_for('auth.register') }}">Click to Register!</a></p>
-    <p>
-        Forgot Your Password?
-        <a href="{{ url_for('auth.reset_password_request') }}">Click to Reset It</a>
-    </p>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-info" role="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="form-label-group">
+            {% if form.username.errors %}
+                {{ form.username(size=32, class_="form-control is-invalid", placeholder=form.username.label.text) }}
+            {% else %}
+                {{ form.username(size=32, class_="form-control", placeholder=form.username.label.text) }}
+            {% endif %}
+
+            {{ form.username.label }}
+
+            {% if form.username.errors %}
+                <div class="invalid-feedback">
+                    {{ form.username.label.text }}: {{ form.username.errors[0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-label-group">
+            {% if form.password.errors %}
+                {{ form.password(size=32, class_="form-control is-invalid", placeholder=form.password.label.text) }}
+            {% else %}
+                {{ form.password(size=32, class_="form-control", placeholder=form.password.label.text) }}
+            {% endif %}
+
+            {{ form.password.label }}
+
+            {% if form.password.errors %}
+                <div class="invalid-feedback">
+                    {{ form.password.label.text }}: {{ form.password.errors[0] }}
+                </div>
+            {% endif %} 
+        </div>
+
+        <div class="checkbox mb-3">
+            {{ form.remember_me() }} {{ form.remember_me.label }} <span class="mx-1">&middot;</span> <a href="{{ url_for('auth.reset_password_request') }}"> {{ 'Forget Password?' }}</a>
+        </div>
+
+        {{ form.submit(class="btn btn-lg btn-primary btn-block") }}
+
+        <div class="text-center mt-5">
+            <p>{{ 'New User?' }} <a href="{{ url_for('auth.register') }}">{{ 'Click to Register!' }}</a></p>
+        </div>
+    </form>
 {% endblock %}

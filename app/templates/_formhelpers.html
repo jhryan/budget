@@ -1,0 +1,66 @@
+{% macro form_group(field) -%}
+    {% set class_ = kwargs.pop('class_', '') %}
+    {% set placeholder = '' %}
+    <div class="form-label-group">
+        {% if field.errors %}
+            {% set class_ = class_ + " form-control is-invalid" %}  
+        {% else %}
+            {% set class_ = class_ + " form-control" %}
+        {% endif %}
+
+        {{ field(class_=class_, placeholder=field.label.text) }}
+        {{ field.label }}
+
+        {% if field.errors %}
+            <div class="invalid-feedback">
+                {{ field.label.text }}: {{ field.errors[0] }}
+            </div>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro quick_form(form) -%}
+    {% set class_ = kwargs.pop('class_', '') %}
+    {% set novalidate = kwargs.pop('novalidate', True) %}
+    {% set form_banner = kwargs.pop('form_banner', False) %}
+    {% set form_title = kwargs.pop('form_title', '') %}
+    {% set form_messages = kwargs.pop('form_messages', False) %}
+
+    {% if novalidate %}
+        <form class="{{ class_ }}" method="post" action="" novalidate>
+    {% else %}
+        <form class="{{ class_ }}" method="post" action="">
+    {% endif %}
+
+    {% if form_banner or form_title %}
+        <div class="text-center mb-4">
+            {% if form_banner %}
+                <img class="mb-4" src="{{ url_for('static', filename='img/credit_cards.svg') }}" alt="" width="72" height="72">
+            {% endif %}
+            {% if form_title %}
+                <h1 class="h3 mb-3 font-weight-normal">{{ form_title }}</h1>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if form_messages %}
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-info" role="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    {% endif %}
+    
+    {% for field in form %}
+        {% if field.type in ('HiddenField', 'CSRFTokenField') %}
+            {{ field() }}
+        {% elif field.type == 'SubmitField' %}
+            {{ field(class_="btn btn-lg btn-primary btn-block") }}
+        {% else %}
+            {{ form_group(field) }}
+        {% endif %}
+    {% endfor %}
+    </form>
+{% endmacro %}
