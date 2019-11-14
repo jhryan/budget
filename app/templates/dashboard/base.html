@@ -37,19 +37,19 @@
                     </div>
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link {% if active_page == 'dashboard.budget' %} active {% endif %}" href="{{ url_for('dashboard.budget', username=user.username, budget_id=budget.id) }}">
+                            <a class="nav-link {% if active_page == 'dashboard.budget' %} active {% endif %}" href="{{ url_for('dashboard.budget') }}">
                                 <span data-feather="mail"></span>
                                 Budget <span class="sr-only">(current)</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {% if active_page == 'dashboard.reports' %} active {% endif %}" href="{{ url_for('dashboard.reports', username=user.username, budget_id=budget.id) }}">
+                            <a class="nav-link {% if active_page == 'dashboard.reports' %} active {% endif %}" href="{{ url_for('dashboard.reports') }}">
                                 <span data-feather="bar-chart-2"></span>
                                 Reports
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {% if active_page == 'dashboard.accounts' %} active {% endif %}" href="{{ url_for('dashboard.accounts', username=user.username, budget_id=budget.id) }}">
+                            <a class="nav-link {% if active_page == 'dashboard.accounts' %} active {% endif %}" href="{{ url_for('dashboard.accounts') }}">
                                 <span data-feather="book-open"></span>
                                 All Accounts
                             </a>
