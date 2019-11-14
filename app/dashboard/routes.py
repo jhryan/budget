@@ -37,43 +37,37 @@ def pull_url_values(endpoint, values):
         last_budget_id = User.query.filter_by(username=g.username).first().last_budget_id
         g.budget_id = last_budget_id if last_budget_id else Budget.query.join(Budget, User.budgets).first()
 
-
-def authenticate(username, budget_id):
-    user = User.query.filter_by(username=username).first()
+@bp.before_request
+def before_request():
+    user = User.query.filter_by(username=g.username).first()
     if user is None or user != current_user:
         abort(401)
 
-    if budget_id is None:
-        if user.last_budget is None:
-            budget = Budget.query.filter_by(user=user).first_or_404()
-        else:
-            budget = user.last_budget
-    else:
-        budget = Budget.query.filter_by(user=user).filter_by(id=budget_id).first_or_404()
-        user.last_budget = budget
-        db.session.commit()
+    budget = Budget.query.filter_by(user=user).filter_by(id=g.budget_id).first_or_404()
+    user.last_budget = budget
+    db.session.commit()
     
     accounts = Account.query.filter_by(budget=budget).all()
-    return user, budget, accounts
+
+    g.user = user
+    g.budget = budget
+    g.accounts = accounts
 
 
 @bp.route('/<username>/budget/', defaults={'budget_id': None})
 @bp.route('/<username>/budget/<int:budget_id>')
 @login_required
 def budget():
-    user, budget, accounts = authenticate(g.username, g.budget_id)
-    return render_template('dashboard/budget.html', title='Dashboard', user=user, budget=budget, accounts=accounts)
+    return render_template('dashboard/budget.html', title='Dashboard', user=g.user, budget=g.budget, accounts=g.accounts)
 
 
 @bp.route('/<username>/budget/<int:budget_id>/reports')
 @login_required
 def reports():
-    user, budget, accounts = authenticate(g.username, g.budget_id)
-    return render_template('dashboard/reports.html', title='Dashboard', user=user, budget=budget, accounts=accounts)
+    return render_template('dashboard/reports.html', title='Dashboard', user=g.user, budget=g.budget, accounts=g.accounts)
 
 
 @bp.route('/<username>/budget/<int:budget_id>/accounts')
 @login_required
 def accounts():
-    user, budget, accounts = authenticate(g.username, g.budget_id)
-    return render_template('dashboard/accounts.html', title='Dashboard', user=user, budget=budget, accounts=accounts)
+    return render_template('dashboard/accounts.html', title='Dashboard', user=g.user, budget=g.budget, accounts=g.accounts)
