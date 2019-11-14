@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% set active_page = active_page|default('dashboard.budget') -%}
+{% from '_formhelpers.html' import form_group %}
 
 {% block styles %}
     {{ super() }}
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/floating_labels.css') }}">
 {% endblock %}
 
 {% block navbar %}
@@ -99,19 +101,26 @@
                 aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addAccountModalTitle">Add Account</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            ...
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Submit</button>
-                        </div>
+                        <form class="form-floating" method="post" action="" novalidate>
+                            {{ form.hidden_tag() }}
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addAccountModalTitle">Add Account</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-label-group">
+                                    {{ form.account_type(class='custom-select form-control') }}
+                                </div>
+                                {{ form_group(form.account_name) }}
+                                {{ form_group(form.account_balance) }}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                {{ form.submit(class_="btn btn-primary") }}
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

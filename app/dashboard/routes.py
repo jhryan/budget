@@ -11,6 +11,7 @@ from flask_login import login_required
 
 from app import db
 from app.dashboard import bp
+from app.dashboard.forms import AddAccountForm
 from app.models import Account
 from app.models import Budget
 from app.models import User
@@ -58,13 +59,13 @@ def before_request():
 @bp.route('/<username>/budget/<int:budget_id>')
 @login_required
 def budget():
-    return render_template('dashboard/budget.html', title='Dashboard', user=g.user, budget=g.budget, accounts=g.accounts)
+    return render_template('dashboard/budget.html', title='Dashboard', form=AddAccountForm(), user=g.user, budget=g.budget, accounts=g.accounts)
 
 
 @bp.route('/<username>/budget/<int:budget_id>/reports')
 @login_required
 def reports():
-    return render_template('dashboard/reports.html', title='Dashboard', user=g.user, budget=g.budget, accounts=g.accounts)
+    return render_template('dashboard/reports.html', title='Dashboard', form=AddAccountForm(), user=g.user, budget=g.budget, accounts=g.accounts)
 
 
 @bp.route('/<username>/budget/<int:budget_id>/accounts/', defaults={'account_id': None})
@@ -76,4 +77,4 @@ def accounts(account_id):
         account = Account.query.filter_by(id=account_id).first()
         if account is None or account.budget.user != current_user:
             abort(401)
-    return render_template('dashboard/accounts.html', title='Dashboard', user=g.user, budget=g.budget, accounts=g.accounts, account=account)
+    return render_template('dashboard/accounts.html', title='Dashboard', form=AddAccountForm(), user=g.user, budget=g.budget, accounts=g.accounts, account=account)

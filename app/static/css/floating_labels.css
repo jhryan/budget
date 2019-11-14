@@ -13,7 +13,8 @@
 }
 
 .form-label-group > input,
-.form-label-group > label {
+.form-label-group > label,
+.form-label-group > select {
   padding: var(--input-padding-y) var(--input-padding-x);
 }
 
