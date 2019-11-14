@@ -14,13 +14,6 @@ from app.models import Budget
 from app.models import User
 
 
-@bp.before_app_request
-def before_request():
-    if current_user.is_authenticated:
-        current_user.last_seen = datetime.utcnow()
-        db.session.commit()
-
-
 @bp.route('/<username>/budget/', defaults={'budget_id': None})
 @bp.route('/<username>/budget/<int:budget_id>')
 @login_required
