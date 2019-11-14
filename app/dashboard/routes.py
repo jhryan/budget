@@ -45,6 +45,7 @@ def budget(username, budget_id):
     accounts = Account.query.filter_by(budget=budget).all()
     return render_template('dashboard/budget.html', title='Dashboard', budget=budget, user=user, accounts=accounts)
 
+
 @bp.route('/<username>/budget/<int:budget_id>/reports')
 @login_required
 def reports(username, budget_id):
@@ -69,3 +70,25 @@ def reports(username, budget_id):
     return render_template('dashboard/reports.html', title='Dashboard', budget=budget, user=user, accounts=accounts)
 
 
+@bp.route('/<username>/budget/<int:budget_id>/accounts')
+@login_required
+def accounts(username, budget_id):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash(f'User {username} not found.')
+        return redirect(url_for('main.index'))
+    if user != current_user:
+        abort(401)
+
+    if budget_id is None:
+        if user.last_budget is None:
+            budget = Budget.query.filter_by(user=user).first_or_404()
+        else:
+            budget = user.last_budget
+    else:
+        budget = Budget.query.filter_by(user=user).filter_by(id=budget_id).first_or_404()
+        user.last_budget = budget
+        db.session.commit()
+    
+    accounts = Account.query.filter_by(budget=budget).all()
+    return render_template('dashboard/accounts.html', title='Dashboard', budget=budget, user=user, accounts=accounts)
