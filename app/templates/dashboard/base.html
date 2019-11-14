@@ -19,8 +19,8 @@
                     <div class="dropdown">
                         <button class="btn btn-block rounded-0 dropdown-toggle d-flex justify-content-between align-items-center" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <dl class="mb-0 text-left">
-                                <dt>{{ budget_name }}</dt>
-                                <dd class="mb-0 small">{{ email }}</dd>
+                                <dt>{{ budget.name }}</dt>
+                                <dd class="mb-0 small">{{ user.email }}</dd>
                             </dl>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
@@ -37,13 +37,13 @@
                     </div>
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link {% if active_page == 'dashboard.budget' %} active {% endif %}" href="#">
+                            <a class="nav-link {% if active_page == 'dashboard.budget' %} active {% endif %}" href="{{ url_for('dashboard.budget', username=user.username, budget_id=budget.id) }}">
                                 <span data-feather="mail"></span>
                                 Budget <span class="sr-only">(current)</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {% if active_page == 'dashboard.reports' %} active {% endif %}" href="#">
+                            <a class="nav-link {% if active_page == 'dashboard.reports' %} active {% endif %}" href="{{ url_for('dashboard.reports', username=user.username, budget_id=budget.id) }}">
                                 <span data-feather="bar-chart-2"></span>
                                 Reports
                             </a>
