@@ -67,7 +67,13 @@ def reports():
     return render_template('dashboard/reports.html', title='Dashboard', user=g.user, budget=g.budget, accounts=g.accounts)
 
 
-@bp.route('/<username>/budget/<int:budget_id>/accounts')
+@bp.route('/<username>/budget/<int:budget_id>/accounts/', defaults={'account_id': None})
+@bp.route('/<username>/budget/<int:budget_id>/accounts/<int:account_id>')
 @login_required
-def accounts():
-    return render_template('dashboard/accounts.html', title='Dashboard', user=g.user, budget=g.budget, accounts=g.accounts)
+def accounts(account_id):
+    account = None
+    if account_id is not None:
+        account = Account.query.filter_by(id=account_id).first()
+        if account is None or account.budget.user != current_user:
+            abort(401)
+    return render_template('dashboard/accounts.html', title='Dashboard', user=g.user, budget=g.budget, accounts=g.accounts, account=account)

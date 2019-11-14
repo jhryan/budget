@@ -65,7 +65,7 @@
                             <div class="collapse show" id="budget-accordion">
                                 {% if accounts %}
                                     {% for account in accounts %}
-                                    <a href="#" class="nav-link" data-parent="#budget-accordion"><span class="pl-4">{{ account.name }}</span></a>
+                                    <a class="nav-link {% if active_page == 'dashboard.accounts.%d' % account.id %} active {% endif %}" data-parent="#budget-accordion" href="{{ url_for('dashboard.accounts', account_id=account.id) }}"><span class="pl-4">{{ account.name }}</span></a>
                                     {% endfor %}
                                 {% endif %}
                             </div>
