@@ -33,11 +33,15 @@ def budget(username, budget_id):
         abort(401)
 
     if budget_id is None:
-        budget = Budget.query.filter_by(user=user).first()
+        if user.last_budget is None:
+            budget = Budget.query.filter_by(user=user).first_or_404()
+        else:
+            budget = user.last_budget
     else:
-        budget = Budget.query.filter_by(user=user, id=budget_id).first()
-    if budget is None:
-        abort(404)
+        budget = Budget.query.filter_by(user=user).filter_by(id=budget_id).first_or_404()
+        user.last_budget = budget
+        db.session.commit()
+        
     
     accounts = Account.query.filter_by(budget=budget).all()
     return render_template('dashboard/budget.html', title='Dashboard', budget_name=budget.name, email=user.email, accounts=accounts)

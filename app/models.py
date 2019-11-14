@@ -18,8 +18,11 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    last_budget_id = db.Column(db.Integer, db.ForeignKey('budget.id'))
+    last_budget = db.relationship('Budget', foreign_keys=[last_budget_id])
 
-    budgets = db.relationship('Budget', backref='user', lazy=True)
+    budgets = db.relationship('Budget', foreign_keys=[id], primaryjoin='Budget.user_id == User.id', backref=db.backref('user', uselist=False), lazy=True)
+
     
     def __repr__(self):
         return f'<User {self.username}>'
