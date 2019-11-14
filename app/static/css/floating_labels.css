@@ -1,3 +1,12 @@
+:root {
+  --input-padding-x: .75rem;
+  --input-padding-y: .75rem;
+}
+
+.form-floating .form-control {
+  height: auto;
+}
+
 .form-label-group {
   position: relative;
   margin-bottom: 1rem;
