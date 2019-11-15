@@ -95,5 +95,5 @@ def add_account():
         db.session.commit()
         flash('Account successfully created!')
         return redirect(url_for('dashboard.accounts', account_id=account.id))
-    flash('Failed to create account.')
+    flash('Failed to create account.', 'danger')
     return redirect(url_for('dashboard.budget'))
