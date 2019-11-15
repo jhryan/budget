@@ -85,13 +85,7 @@
 
             <!-- Dashboard Content -->
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-                {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-info" role="alert">{{ message }}</div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
+                {% include '_messages.html' %}
 
                 {% block dashboard_content %} {% endblock %}
             </main>

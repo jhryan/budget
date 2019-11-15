@@ -44,13 +44,7 @@
     {% endif %}
 
     {% if form_messages %}
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-info" role="alert">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        {% include '_messages.html' %}
     {% endif %}
     
     {% for field in form %}
