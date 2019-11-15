@@ -2,6 +2,7 @@ from datetime import datetime
 
 from flask import abort
 from flask import current_app
+from flask import flash
 from flask import g
 from flask import redirect
 from flask import render_template
@@ -78,3 +79,21 @@ def accounts(account_id):
         if account is None or account.budget.user != current_user:
             abort(401)
     return render_template('dashboard/accounts.html', title='Dashboard', form=AddAccountForm(), user=g.user, budget=g.budget, accounts=g.accounts, account=account)
+
+
+@bp.route('/<username>/budget/<int:budget_id>/accounts/add_account', methods=['POST'])
+@login_required
+def add_account():
+    form = AddAccountForm()
+    if form.validate_on_submit():
+        if form.account_type.data in ('Checking', 'Savings', 'Cash'):
+            account_type = 'Asset'
+        else:
+            account_type = 'Liability'
+        account = Account(name=form.account_name.data, type=account_type, budget=g.budget)
+        db.session.add(account)
+        db.session.commit()
+        flash('Account successfully created!')
+        return redirect(url_for('dashboard.accounts', account_id=account.id))
+    flash('Failed to create account.')
+    return redirect(url_for('dashboard.budget'))

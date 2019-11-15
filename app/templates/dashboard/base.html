@@ -101,7 +101,7 @@
                 aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
-                        <form class="form-floating" method="post" action="" novalidate>
+                        <form class="form-floating" method="post" action="{{ url_for('dashboard.add_account') }}" novalidate>
                             {{ form.hidden_tag() }}
                             <div class="modal-header">
                                 <h5 class="modal-title" id="addAccountModalTitle">Add Account</h5>
