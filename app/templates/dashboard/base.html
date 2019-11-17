@@ -128,14 +128,26 @@
     {{ super () }}
 
     <script>
-        $('.expander').click (function () {
-            if ( $(this).children('svg.feather.feather-chevron-down').length) {
-                $(this).children('svg.feather.feather-chevron-down').replaceWith(feather.icons['chevron-right'].toSvg());
+
+        // first hide will not have data set, so need to wait for first hidden.bs.collapse to change icon
+        $(document).on('hidden.bs.collapse', function (e) {
+            var clickedBtn = $(e.target).data('bs.collapse')._triggerArray[0]
+            $(clickedBtn).children('svg.feather.feather-chevron-down').replaceWith(feather.icons['chevron-right'].toSvg());
+        });
+
+        $(document).on('hide.bs.collapse', function (e) {
+            if ($(e.target).data('bs.collapse') === undefined)
+            {
+                return; 
             }
-            else {
-                $(this).children('svg.feather.feather-chevron-right').replaceWith(feather.icons['chevron-down'].toSvg());
-            }
-        })
+            var clickedBtn = $(e.target).data('bs.collapse')._triggerArray[0]
+            $(clickedBtn).children('svg.feather.feather-chevron-down').replaceWith(feather.icons['chevron-right'].toSvg());
+        });
+
+        $(document).on('show.bs.collapse', function (e) {
+            var clickedBtn = $(e.target).data('bs.collapse')._triggerArray[0]
+            $(clickedBtn).children('svg.feather.feather-chevron-right').replaceWith(feather.icons['chevron-down'].toSvg());
+        });
     </script>
 
 {% endblock %}
