@@ -2,7 +2,7 @@
 {% set active_page = 'dashboard.budget' -%}
 
 {% block dashboard_content %}
-    <table class="table">
+    <table class="table table-sm">
         <thead>
             <tr>
                 <th scope="col">Category</th>
@@ -12,43 +12,45 @@
             </tr>
         </thead>
         <tbody>
-            <tr class="thead-light">
-                <th scope="rowgroup">Savings</th>
+            <tr class="thead-light" data-toggle="collapse" data-target=".budget-category-savings">
+                <th>Savings</th>
                 <th>$0.00</td>
                 <th>$0.00</td>
                 <th>$0.00</td>
             </tr>
-            <tr>
+            <tr class="budget-category-savings collapse show">
                 <th scope="row">Emergency Fund</th>
                 <td>$0.00</td>
                 <td>$0.00</td>
                 <td>$0.00</td>
             </tr>
-            <tr>
+            <tr class="budget-category-savings collapse show">
                 <th scope="row">Mortgage</th>
                 <td>$0.00</td>
                 <td>$0.00</td>
                 <td>$0.00</td>
             </tr>
-            <tr>
+            <tr class="budget-category-savings collapse show">
                 <th scope="row">IRA</th>
                 <td>$0.00</td>
                 <td>$0.00</td>
                 <td>$0.00</td>
             </tr>
-            <tr class="thead-light">
-                <th scope="rowgroup">Personal</th>
+        </tbody>
+        <tbody>
+            <tr class="thead-light" data-toggle="collapse" data-target=".budget-category-personal"> 
+                <th>Personal</th>
                 <th>$0.00</td>
                 <th>$0.00</td>
                 <th>$0.00</td>
             </tr>
-            <tr>
+            <tr class="budget-category-personal collapse show">
                 <th scope="row">Household Goods</th>
                 <td>$0.00</td>
                 <td>$0.00</td>
                 <td>$0.00</td>
             </tr>
-            <tr>
+            <tr class="budget-category-personal collapse show">
                 <th scope="row">Clothes</th>
                 <td>$0.00</td>
                 <td>$0.00</td>
