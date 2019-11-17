@@ -63,7 +63,7 @@
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a href="#budget-accordion" class="nav-link expander" data-toggle="collapse" aria-expanded="true">
-                                <span data-feather="minus-circle"></span>
+                                <span data-feather="chevron-down"></span>
                                 Budget
                             </a>
                             <div class="collapse show" id="budget-accordion">
@@ -129,11 +129,11 @@
 
     <script>
         $('.expander').click (function () {
-            if ( $(this).children('svg.feather.feather-minus-circle').length) {
-                $(this).children('svg.feather.feather-minus-circle').replaceWith(feather.icons['plus-circle'].toSvg());
+            if ( $(this).children('svg.feather.feather-chevron-down').length) {
+                $(this).children('svg.feather.feather-chevron-down').replaceWith(feather.icons['chevron-right'].toSvg());
             }
             else {
-                $(this).children('svg.feather.feather-plus-circle').replaceWith(feather.icons['minus-circle'].toSvg());
+                $(this).children('svg.feather.feather-chevron-right').replaceWith(feather.icons['chevron-down'].toSvg());
             }
         })
     </script>
