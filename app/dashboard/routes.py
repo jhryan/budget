@@ -61,13 +61,13 @@ def before_request():
 @bp.route('/<username>/budget/<int:budget_id>')
 @login_required
 def budget():
-    return render_template('dashboard/budget.html', title='Dashboard', form=AddAccountForm(), user=g.user, budget=g.budget, accounts=g.accounts)
+    return render_template('dashboard/budget.html', title='Dashboard', form=AddAccountForm(g.budget), user=g.user, budget=g.budget, accounts=g.accounts)
 
 
 @bp.route('/<username>/budget/<int:budget_id>/reports')
 @login_required
 def reports():
-    return render_template('dashboard/reports.html', title='Dashboard', form=AddAccountForm(), user=g.user, budget=g.budget, accounts=g.accounts)
+    return render_template('dashboard/reports.html', title='Dashboard', form=AddAccountForm(g.budget), user=g.user, budget=g.budget, accounts=g.accounts)
 
 
 @bp.route('/<username>/budget/<int:budget_id>/accounts/', defaults={'account_id': None})
@@ -79,13 +79,13 @@ def accounts(account_id):
         account = Account.query.filter_by(id=account_id).first()
         if account is None or account.budget.user != current_user:
             abort(401)
-    return render_template('dashboard/accounts.html', title='Dashboard', form=AddAccountForm(), user=g.user, budget=g.budget, accounts=g.accounts, account=account)
+    return render_template('dashboard/accounts.html', title='Dashboard', form=AddAccountForm(g.budget), user=g.user, budget=g.budget, accounts=g.accounts, account=account)
 
 
 @bp.route('/<username>/budget/<int:budget_id>/accounts/add_account', methods=['POST'])
 @login_required
 def add_account():
-    form = AddAccountForm()
+    form = AddAccountForm(g.budget)
     if form.validate_on_submit():
         if form.account_type.data in ('Checking', 'Savings', 'Cash'):
             account_type = 'Asset'

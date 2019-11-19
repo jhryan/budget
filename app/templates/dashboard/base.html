@@ -152,15 +152,13 @@
     function ajaxFormSubmission(event) {
         event.preventDefault();
         $.post($(this).attr('action'), $(this).serialize()).done(function (data) {
-            console.log(data);
-            if (data['data']['message'] === 'success') {
+            if (typeof data.data !== 'undefined' && data.data.message === 'success') {
                 $(event.target).closest('.modal').modal('toggle');
             } else {
                 newForm = $(data);
                 $(event.target).replaceWith(newForm);
                 newForm.on('submit', ajaxFormSubmission);
             }
-
         });
     }
     
