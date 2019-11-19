@@ -1,5 +1,6 @@
 {% macro form_group(field) -%}
     {% set class_ = kwargs.pop('class_', '') %}
+    {% set label = kwargs.pop('label', True) %}
     {% set placeholder = '' %}
     <div class="form-label-group">
         {% if field.errors %}
@@ -9,7 +10,7 @@
         {% endif %}
 
         {{ field(class_=class_, placeholder=field.label.text) }}
-        {{ field.label }}
+        {% if label %} {{ field.label }} {% endif %}
 
         {% if field.errors %}
             <div class="invalid-feedback">

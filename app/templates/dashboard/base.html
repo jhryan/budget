@@ -118,26 +118,7 @@
                 aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
-                        <form class="form-floating" method="post" action="{{ url_for('dashboard.add_account') }}" novalidate>
-                            {{ form.hidden_tag() }}
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="addAccountModalTitle">Add Account</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="form-label-group">
-                                    {{ form.account_type(class='custom-select form-control') }}
-                                </div>
-                                {{ form_group(form.account_name) }}
-                                {{ form_group(form.account_balance) }}
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                {{ form.submit(class_="btn btn-primary") }}
-                            </div>
-                        </form>
+                        {% include 'dashboard/add_account_form.html' %}
                     </div>
                 </div>
             </div>
@@ -150,20 +131,43 @@
 
     {{ super () }}
 
+    <!-- change expander icon when expanding / collapsing -->
     <script>
-        $('.expander').click (function (e) {
-            if (e.target != this)
-            {
+        $('.expander').click (function (event) {
+            if (event.target != this) {
                 $(this).trigger('click');
                 return;
             }
-            if ( $(this).children('svg.feather.feather-chevron-down').length) {
+
+            if ($(this).children('svg.feather.feather-chevron-down').length) {
                 $(this).children('svg.feather.feather-chevron-down').replaceWith(feather.icons['chevron-right'].toSvg());
-            }
-            else {
+            } else {
                 $(this).children('svg.feather.feather-chevron-right').replaceWith(feather.icons['chevron-down'].toSvg());
             }
         })
+    </script>
+
+    <!-- send modal forms via AJAX -->
+    <script>
+    function ajaxFormSubmission(event) {
+        event.preventDefault();
+        $.post($(this).attr('action'), $(this).serialize()).done(function (data) {
+            console.log(data);
+            if (data['data']['message'] === 'success') {
+                $(event.target).closest('.modal').modal('toggle');
+            } else {
+                newForm = $(data);
+                $(event.target).replaceWith(newForm);
+                newForm.on('submit', ajaxFormSubmission);
+            }
+
+        });
+    }
+    
+    
+    $(function () {
+        $('.modal form').on('submit', ajaxFormSubmission)
+    });
     </script>
 
 {% endblock %}

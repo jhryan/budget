@@ -4,6 +4,7 @@ from flask import abort
 from flask import current_app
 from flask import flash
 from flask import g
+from flask import jsonify
 from flask import redirect
 from flask import render_template
 from flask import url_for
@@ -93,7 +94,5 @@ def add_account():
         account = Account(name=form.account_name.data, type=account_type, budget=g.budget)
         db.session.add(account)
         db.session.commit()
-        flash('Account successfully created!')
-        return redirect(url_for('dashboard.accounts', account_id=account.id))
-    flash('Failed to create account.', 'danger')
-    return redirect(url_for('dashboard.budget'))
+        return jsonify(data={'message': 'success'})
+    return render_template('dashboard/add_account_form.html', form=form)
