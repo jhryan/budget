@@ -14,6 +14,7 @@ from flask_login import login_required
 from app import db
 from app.dashboard import bp
 from app.dashboard.forms import AddAccountForm
+from app.dashboard.forms import AddCategoryGroupForm
 from app.models import Account
 from app.models import Budget
 from app.models import User
@@ -61,13 +62,13 @@ def before_request():
 @bp.route('/<username>/budget/<int:budget_id>')
 @login_required
 def budget():
-    return render_template('dashboard/budget.html', title='Dashboard', form=AddAccountForm(g.budget), user=g.user, budget=g.budget, accounts=g.accounts)
+    return render_template('dashboard/budget.html', title='Dashboard', add_account_form=AddAccountForm(g.budget), category_group_form=AddCategoryGroupForm(g.budget), user=g.user, budget=g.budget, accounts=g.accounts)
 
 
 @bp.route('/<username>/budget/<int:budget_id>/reports')
 @login_required
 def reports():
-    return render_template('dashboard/reports.html', title='Dashboard', form=AddAccountForm(g.budget), user=g.user, budget=g.budget, accounts=g.accounts)
+    return render_template('dashboard/reports.html', title='Dashboard', add_account_form=AddAccountForm(g.budget), user=g.user, budget=g.budget, accounts=g.accounts)
 
 
 @bp.route('/<username>/budget/<int:budget_id>/accounts/', defaults={'account_id': None})
@@ -79,7 +80,7 @@ def accounts(account_id):
         account = Account.query.filter_by(id=account_id).first()
         if account is None or account.budget.user != current_user:
             abort(401)
-    return render_template('dashboard/accounts.html', title='Dashboard', form=AddAccountForm(g.budget), user=g.user, budget=g.budget, accounts=g.accounts, account=account)
+    return render_template('dashboard/accounts.html', title='Dashboard', add_account_form=AddAccountForm(g.budget), user=g.user, budget=g.budget, accounts=g.accounts, account=account)
 
 
 @bp.route('/<username>/budget/<int:budget_id>/accounts/add_account', methods=['POST'])
@@ -96,4 +97,4 @@ def add_account():
         db.session.commit()
         flash('Account successfully created!')
         return jsonify(data={'message': 'success'})
-    return render_template('dashboard/add_account_form.html', form=form)
+    return render_template('dashboard/add_account_form.html', add_account_form=form)

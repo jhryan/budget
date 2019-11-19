@@ -1,7 +1,7 @@
 {% from '_formhelpers.html' import form_group %}
 
 <form class="form-floating" method="post" action="{{ url_for('dashboard.add_account') }}" novalidate>
-    {{ form.hidden_tag() }}
+    {{ add_account_form.hidden_tag() }}
     <div class="modal-header">
         <h5 class="modal-title" id="addAccountModalTitle">Add Account</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -9,12 +9,12 @@
         </button>
     </div>
     <div class="modal-body">
-        {{ form_group(form.account_type, class_='custom-select form-control', label=False) }}
-        {{ form_group(form.account_name) }}
-        {{ form_group(form.account_balance) }}
+        {{ form_group(add_account_form.account_type, class_='custom-select form-control', label=False) }}
+        {{ form_group(add_account_form.account_name) }}
+        {{ form_group(add_account_form.account_balance) }}
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        {{ form.submit(class_="btn btn-primary") }}
+        {{ add_account_form.submit(class_="btn btn-primary") }}
     </div>
 </form>
