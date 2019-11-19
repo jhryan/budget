@@ -94,5 +94,6 @@ def add_account():
         account = Account(name=form.account_name.data, type=account_type, budget=g.budget)
         db.session.add(account)
         db.session.commit()
+        flash('Account successfully created!')
         return jsonify(data={'message': 'success'})
     return render_template('dashboard/add_account_form.html', form=form)

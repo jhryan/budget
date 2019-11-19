@@ -109,7 +109,6 @@
             <!-- Dashboard Content -->
             <main role="main" class="col-lg-10 ml-sm-auto px-0">
                 {% include '_messages.html' %}
-
                 {% block dashboard_content %} {% endblock %}
             </main>
 
@@ -154,6 +153,7 @@
         $.post($(this).attr('action'), $(this).serialize()).done(function (data) {
             if (typeof data.data !== 'undefined' && data.data.message === 'success') {
                 $(event.target).closest('.modal').modal('toggle');
+                location.reload();
             } else {
                 newForm = $(data);
                 $(event.target).replaceWith(newForm);
