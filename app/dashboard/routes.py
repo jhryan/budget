@@ -121,6 +121,10 @@ def add_category(category_group_name):
     form = AddCategoryForm(g.budget)
     category_group = Account.query.filter_by(budget=g.budget).filter_by(name=category_group_name).first()
     if form.validate_on_submit():
+        category = Account.query.filter_by(budget=g.budget).filter(Account.parent == category_group).filter_by(name=form.category.data).first()
+        if category is not None:
+            form.category.errors.append('This category name is already in use.')
+            return render_template('dashboard/add_category_form.html', add_category_form=form, category_group=category_group)
         account = Account(name=form.category.data, type='Asset', budget=g.budget, parent=category_group)
         db.session.add(account)
         db.session.commit()
