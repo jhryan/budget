@@ -167,17 +167,4 @@
         $('.modal form').on('submit', ajaxFormSubmission)
     });
     </script>
-
-    <!-- Initialize popovers -->
-    <script>
-        $(function () {
-            $('[data-toggle="popover"]').popover({
-                html: true,
-                sanitize: false,
-                content: function() {
-                    return $(this).find('.popover-content').html();
-                }
-            })
-        })
-    </script>
 {% endblock %}

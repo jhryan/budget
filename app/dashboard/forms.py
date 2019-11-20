@@ -38,6 +38,6 @@ class AddCategoryGroupForm(FlaskForm):
 
 
     def validate_category_group(self, category_group):
-        account = Account.query.filter_by(budget=self.budget).filter(parent.name == 'Budget').filter_by(name=category_group.data).first()
+        account = Account.query.filter_by(budget=self.budget).filter(Account.parent.has(name='Budget')).filter_by(name=category_group.data).first()
         if account is not None:
             raise ValidationError('There is already a category group with this name.')

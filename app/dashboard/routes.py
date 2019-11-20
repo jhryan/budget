@@ -98,3 +98,16 @@ def add_account():
         flash('Account successfully created!')
         return jsonify(data={'message': 'success'})
     return render_template('dashboard/add_account_form.html', add_account_form=form)
+
+
+@bp.route('/<username>/budget/<int:budget_id>/budget/add_category_group', methods=['POST'])
+@login_required
+def add_category_group():
+    form = AddCategoryGroupForm(g.budget)
+    if form.validate_on_submit():
+        budget_account = Account.query.filter_by(budget=g.budget).filter_by(name='Budget').first()
+        account = Account(name=form.category_group.data, type='Asset', budget=g.budget, parent=budget_account)
+        db.session.add(account)
+        db.session.commit()
+        return jsonify(data={'message': 'success'})
+    return render_template('dashboard/add_category_group_form.html', category_group_form=form)

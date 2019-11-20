@@ -76,7 +76,7 @@ class Account(db.Model):
     budget_id = db.Column(db.Integer, db.ForeignKey('budget.id'), nullable=False)
 
     parent_id = db.Column(db.Integer, db.ForeignKey('account.id'))
-    children = db.relationship('Account', backref=db.backref('parent', remote_side=[id]), lazy=True)
+    parent = db.relationship('Account', backref='children', remote_side=[id], lazy=True)
     
     postings = db.relationship('Posting', backref='account', lazy=True)
 
