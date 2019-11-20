@@ -22,33 +22,33 @@
                 <tbody>
                     <tr class="thead-light">
                         <th>
-                            <span class="expander" data-target=".budget-category-{{ category_group.name.lower() }}" data-toggle="collapse" aria-expanded="true">
+                            <span class="expander" data-target=".budget-category-{{ category_group.id }}" data-toggle="collapse" aria-expanded="true">
                                 <span data-feather="chevron-down"></span>
                             </span>
-                            {{ category_group.name }}
+                            <span data-toggle="modal" data-target="#addCategoryModal{{ category_group.id }}">
+                                {{ category_group.name }}
+                            </span>
+                            <!-- 'Add Category' modal  -->
+                            <div class="modal fade" id="addCategoryModal{{ category_group.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        {% include 'dashboard/add_category_form.html' %}
+                                    </div>
+                                </div>
+                            </div>
                         </th>
                         <th>$0.00</td>
                         <th>$0.00</td>
                         <th>$0.00</td>
                     </tr>
-                    <tr class="budget-category-savings collapse show">
-                        <th scope="row">Emergency Fund</th>
-                        <td>$0.00</td>
-                        <td>$0.00</td>
-                        <td>$0.00</td>
-                    </tr>
-                    <tr class="budget-category-savings collapse show">
-                        <th scope="row">Mortgage</th>
-                        <td>$0.00</td>
-                        <td>$0.00</td>
-                        <td>$0.00</td>
-                    </tr>
-                    <tr class="budget-category-savings collapse show">
-                        <th scope="row">IRA</th>
-                        <td>$0.00</td>
-                        <td>$0.00</td>
-                        <td>$0.00</td>
-                    </tr>
+                    {% for category in category_group.children %}
+                        <tr class="budget-category-{{ category_group.id }} collapse show">
+                            <th scope="row">{{ category.name }}</th>
+                            <td>$0.00</td>
+                            <td>$0.00</td>
+                            <td>$0.00</td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             {% endfor %}
         {% endif %}

@@ -1,0 +1,12 @@
+{% from '_formhelpers.html' import form_group %}
+
+<form class="form-floating" method="post" action="{{ url_for('dashboard.add_category', category_group_name=category_group.name) }}" novalidate>
+    {{ add_category_form.hidden_tag() }}
+    <div class="modal-body">
+        {{ form_group(add_category_form.category) }}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        {{ add_category_form.submit(class_="btn btn-primary") }}
+    </div>
+</form>

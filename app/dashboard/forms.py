@@ -41,3 +41,13 @@ class AddCategoryGroupForm(FlaskForm):
         account = Account.query.filter_by(budget=self.budget).filter(Account.parent.has(name='Budget')).filter_by(name=category_group.data).first()
         if account is not None:
             raise ValidationError('There is already a category group with this name.')
+
+
+class AddCategoryForm(FlaskForm):
+    category = StringField('New Category', validators=[DataRequired()])
+    submit = SubmitField('Ok')
+
+
+    def __init__(self, budget, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.budget = budget

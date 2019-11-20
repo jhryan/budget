@@ -14,6 +14,7 @@ from flask_login import login_required
 from app import db
 from app.dashboard import bp
 from app.dashboard.forms import AddAccountForm
+from app.dashboard.forms import AddCategoryForm
 from app.dashboard.forms import AddCategoryGroupForm
 from app.models import Account
 from app.models import Budget
@@ -63,7 +64,7 @@ def before_request():
 @login_required
 def budget():
     category_groups = Account.query.filter_by(budget=g.budget).filter(Account.parent.has(name='Budget')).all()
-    return render_template('dashboard/budget.html', title='Dashboard', add_account_form=AddAccountForm(g.budget), category_group_form=AddCategoryGroupForm(g.budget), user=g.user, budget=g.budget, accounts=g.accounts, category_groups=category_groups)
+    return render_template('dashboard/budget.html', title='Dashboard', add_account_form=AddAccountForm(g.budget), category_group_form=AddCategoryGroupForm(g.budget), add_category_form=AddCategoryForm(g.budget), user=g.user, budget=g.budget, accounts=g.accounts, category_groups=category_groups)
 
 
 @bp.route('/<username>/budget/<int:budget_id>/reports')
@@ -112,3 +113,16 @@ def add_category_group():
         db.session.commit()
         return jsonify(data={'message': 'success'})
     return render_template('dashboard/add_category_group_form.html', category_group_form=form)
+
+
+@bp.route('/<username>/budget/<int:budget_id>/budget/<category_group_name>/add_category', methods=['POST'])
+@login_required
+def add_category(category_group_name):
+    form = AddCategoryForm(g.budget)
+    category_group = Account.query.filter_by(budget=g.budget).filter_by(name=category_group_name).first()
+    if form.validate_on_submit():
+        account = Account(name=form.category.data, type='Asset', budget=g.budget, parent=category_group)
+        db.session.add(account)
+        db.session.commit()
+        return jsonify(data={'message': 'success'})
+    return render_template('dashboard/add_category_form.html', add_category_form=form, category_group=category_group)
