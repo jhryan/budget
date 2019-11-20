@@ -62,7 +62,8 @@ def before_request():
 @bp.route('/<username>/budget/<int:budget_id>')
 @login_required
 def budget():
-    return render_template('dashboard/budget.html', title='Dashboard', add_account_form=AddAccountForm(g.budget), category_group_form=AddCategoryGroupForm(g.budget), user=g.user, budget=g.budget, accounts=g.accounts)
+    category_groups = Account.query.filter_by(budget=g.budget).filter(Account.parent.has(name='Budget')).all()
+    return render_template('dashboard/budget.html', title='Dashboard', add_account_form=AddAccountForm(g.budget), category_group_form=AddCategoryGroupForm(g.budget), user=g.user, budget=g.budget, accounts=g.accounts, category_groups=category_groups)
 
 
 @bp.route('/<username>/budget/<int:budget_id>/reports')

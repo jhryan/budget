@@ -17,63 +17,41 @@
                 <th scope="col">Available</th>
             </tr>
         </thead>
-        <tbody>
-            <tr class="thead-light">
-                <th> 
-                    <span class="expander" data-target=".budget-category-savings" data-toggle="collapse" aria-expanded="true">
-                        <span data-feather="chevron-down"></span>
-                    </span>
-                    Savings
-                </th>
-                <th>$0.00</td>
-                <th>$0.00</td>
-                <th>$0.00</td>
-            </tr>
-            <tr class="budget-category-savings collapse show">
-                <th scope="row">Emergency Fund</th>
-                <td>$0.00</td>
-                <td>$0.00</td>
-                <td>$0.00</td>
-            </tr>
-            <tr class="budget-category-savings collapse show">
-                <th scope="row">Mortgage</th>
-                <td>$0.00</td>
-                <td>$0.00</td>
-                <td>$0.00</td>
-            </tr>
-            <tr class="budget-category-savings collapse show">
-                <th scope="row">IRA</th>
-                <td>$0.00</td>
-                <td>$0.00</td>
-                <td>$0.00</td>
-            </tr>
-        </tbody>
-        <tbody>
-            <tr class="thead-light"> 
-                <th>
-                    <span class="expander" data-target=".budget-category-personal" data-toggle="collapse" aria-expanded="true">
-                        <span data-feather="chevron-down"></span>
-                    </span>
-                    Personal
-                </th>
-                <th>$0.00</td>
-                <th>$0.00</td>
-                <th>$0.00</td>
-            </tr>
-            <tr class="budget-category-personal collapse show">
-                <th scope="row">Household Goods</th>
-                <td>$0.00</td>
-                <td>$0.00</td>
-                <td>$0.00</td>
-            </tr>
-            <tr class="budget-category-personal collapse show">
-                <th scope="row">Clothes</th>
-                <td>$0.00</td>
-                <td>$0.00</td>
-                <td>$0.00</td>
-            </tr>
-        </tbody>
-    </table>
+        {% if category_groups %}
+            {% for category_group in category_groups %}
+                <tbody>
+                    <tr class="thead-light">
+                        <th>
+                            <span class="expander" data-target=".budget-category-{{ category_group.name.lower() }}" data-toggle="collapse" aria-expanded="true">
+                                <span data-feather="chevron-down"></span>
+                            </span>
+                            {{ category_group.name }}
+                        </th>
+                        <th>$0.00</td>
+                        <th>$0.00</td>
+                        <th>$0.00</td>
+                    </tr>
+                    <tr class="budget-category-savings collapse show">
+                        <th scope="row">Emergency Fund</th>
+                        <td>$0.00</td>
+                        <td>$0.00</td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr class="budget-category-savings collapse show">
+                        <th scope="row">Mortgage</th>
+                        <td>$0.00</td>
+                        <td>$0.00</td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr class="budget-category-savings collapse show">
+                        <th scope="row">IRA</th>
+                        <td>$0.00</td>
+                        <td>$0.00</td>
+                        <td>$0.00</td>
+                    </tr>
+                </tbody>
+            {% endfor %}
+        {% endif %}
 
     <!-- 'Add Category Group' modal  -->
     <div class="modal fade" id="addCategoryGroupModal" tabindex="-1" role="dialog" aria-hidden="true">
