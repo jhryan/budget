@@ -102,7 +102,7 @@ def add_account():
     return render_template('dashboard/add_account_form.html', add_account_form=form)
 
 
-@bp.route('/<username>/budget/<int:budget_id>/budget/add_category_group', methods=['POST'])
+@bp.route('/<username>/budget/<int:budget_id>/add_category_group', methods=['POST'])
 @login_required
 def add_category_group():
     form = AddCategoryGroupForm(g.budget)
@@ -115,7 +115,7 @@ def add_category_group():
     return render_template('dashboard/add_category_group_form.html', category_group_form=form)
 
 
-@bp.route('/<username>/budget/<int:budget_id>/budget/<category_group_name>/add_category', methods=['POST'])
+@bp.route('/<username>/budget/<int:budget_id>/<category_group_name>/add_category', methods=['POST'])
 @login_required
 def add_category(category_group_name):
     form = AddCategoryForm(g.budget)

@@ -1,6 +1,7 @@
 {% from '_formhelpers.html' import form_group %}
+{% set action = url_for('dashboard.add_category', category_group_name=category_group.name) if category_group else url_for('dashboard.budget') %}
 
-<form class="form-floating" method="post" action="{{ url_for('dashboard.add_category', category_group_name=category_group.name) }}" novalidate>
+<form class="form-floating" method="post" action="{{ action }}" novalidate>
     {{ add_category_form.hidden_tag() }}
     <div class="modal-body">
         {{ form_group(add_category_form.category) }}
