@@ -52,8 +52,10 @@ def before_request():
     user.last_budget = budget
     db.session.commit()
     
-    accounts = Account.query.filter_by(budget=budget).all()
-
+    category_groups = Account.query.filter_by(budget=budget).filter(Account.parent.has(name='Budget')).all()
+    category_group_names = [category_group.name for category_group in category_groups]
+    accounts = Account.query.filter_by(budget=budget).filter(Account.name != 'Budget').filter(~Account.parent.has(Account.name =='Budget')).filter(~Account.parent.has(Account.name.in_(category_group_names))).all()
+    
     g.user = user
     g.budget = budget
     g.accounts = accounts
