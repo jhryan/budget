@@ -72,14 +72,17 @@
     <script>
         var form_default_url;
 
-        $('#addCategoryModal').on('shown.bs.modal', function (event) {
-            var category_group = $(event.relatedTarget).text().trim();
-            form_default_url = $(event.target).find('form:first').attr('action');
-            $(event.target).find('form:first').attr('action', $(event.target).find('form:first').attr('action') + '/' + category_group + '/add_category');
-        })
+        $(function () {
+            $('#addCategoryModal').on('shown.bs.modal', function (event) {
+                var category_group = $(event.relatedTarget).text().trim();
+                form_default_url = $(event.target).find('form:first').attr('action');
+                $(event.target).find('form:first').attr('action', $(event.target).find('form:first').attr('action') + '/' + category_group + '/add_category');
+            });
 
-        $('#addCategoryModal').on('hidden.bs.modal', function (event) {
-            $(event.target).find('form:first').attr('action', form_default_url);
-        })
+            $('#addCategoryModal').on('hidden.bs.modal', function (event) {
+                $(event.target).find('form:first').attr('action', form_default_url);
+            });
+        });
+
     </script>
 {% endblock %}

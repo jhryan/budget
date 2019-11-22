@@ -132,18 +132,20 @@
 
     <!-- change expander icon when expanding / collapsing -->
     <script>
-        $('.expander').click (function (event) {
-            if (event.target != this) {
-                $(this).trigger('click');
-                return;
-            }
+        $(function () {
+            $('.expander').on('click', function (event) {
+                if (event.target != this) {
+                    $(this).trigger('click');
+                    return;
+                }
 
-            if ($(this).children('svg.feather.feather-chevron-down').length) {
-                $(this).children('svg.feather.feather-chevron-down').replaceWith(feather.icons['chevron-right'].toSvg());
-            } else {
-                $(this).children('svg.feather.feather-chevron-right').replaceWith(feather.icons['chevron-down'].toSvg());
-            }
-        })
+                if ($(this).children('svg.feather.feather-chevron-down').length) {
+                    $(this).children('svg.feather.feather-chevron-down').replaceWith(feather.icons['chevron-right'].toSvg());
+                } else {
+                    $(this).children('svg.feather.feather-chevron-right').replaceWith(feather.icons['chevron-down'].toSvg());
+                }
+            });
+        });
     </script>
 
     <!-- send modal forms via AJAX -->
