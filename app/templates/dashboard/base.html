@@ -164,7 +164,19 @@
     
     
     $(function () {
-        $('.modal form').on('submit', ajaxFormSubmission)
+        $('.modal form').on('submit', ajaxFormSubmission);
+
+        $('.modal').on('hide.bs.modal', function (event) {
+            var form = $(event.target).find('form:first');
+            form.find(':input')
+                .not(':button, :submit, :reset, :hidden')
+                .val('')
+                .prop('checked', false)
+                .prop('selected', false);
+
+            form.find('.is-invalid').removeClass('is-invalid');
+            form.find('.invalid-feedback').remove();
+        });
     });
     </script>
 {% endblock %}
