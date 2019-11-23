@@ -84,7 +84,7 @@
         var add_category_default_url;
 
         $(function () {
-            $('#editCategoryGroupModal').on('shown.bs.modal', function (event) {
+            $('#editCategoryGroupModal').on('show.bs.modal', function (event) {
                 var category_group = $(event.relatedTarget).text().trim();
                 edit_category_group_default_url = $(event.target).find('form:first').attr('action');
                 form = $(event.target).find('form:first');
@@ -92,17 +92,17 @@
                 form.attr('action', $(event.target).find('form:first').attr('action') + '/edit_category_group/' + category_group);
             });
 
-            $('#editCategoryGroupModal').on('hidden.bs.modal', function (event) {
+            $('#editCategoryGroupModal').on('hide.bs.modal', function (event) {
                 $(event.target).find('form:first').attr('action', edit_category_group_default_url);
             });
 
-            $('#addCategoryModal').on('shown.bs.modal', function (event) {
+            $('#addCategoryModal').on('show.bs.modal', function (event) {
                 var category_group = $(event.relatedTarget).parent().text().trim();
                 add_category_default_url = $(event.target).find('form:first').attr('action');
                 $(event.target).find('form:first').attr('action', $(event.target).find('form:first').attr('action') + '/' + category_group + '/add_category');
             });
 
-            $('#addCategoryModal').on('hidden.bs.modal', function (event) {
+            $('#addCategoryModal').on('hide.bs.modal', function (event) {
                 $(event.target).find('form:first').attr('action', add_category_default_url);
             });
         });
