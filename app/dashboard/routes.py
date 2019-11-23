@@ -68,7 +68,7 @@ def before_request():
 @login_required
 def budget():
     category_groups = Account.query.filter_by(budget=g.budget).filter(Account.parent.has(name='Budget')).all()
-    return render_template('dashboard/budget.html', title='Dashboard', add_account_form=AddAccountForm(g.budget), category_group_form=AddCategoryGroupForm(g.budget), edit_category_group_form=EditCategoryGroupForm(g.budget, ''), add_category_form=AddCategoryForm(g.budget), edit_category_form=EditCategoryForm(g.budget, '', ''), user=g.user, budget=g.budget, accounts=g.accounts, category_groups=category_groups)
+    return render_template('dashboard/budget.html', title='Dashboard', add_account_form=AddAccountForm(g.budget), category_group_form=AddCategoryGroupForm(g.budget), edit_category_group_form=EditCategoryGroupForm(g.budget, ''), add_category_form=AddCategoryForm(g.budget, ''), edit_category_form=EditCategoryForm(g.budget, '', ''), user=g.user, budget=g.budget, accounts=g.accounts, category_groups=category_groups)
 
 
 @bp.route('/<username>/budget/<int:budget_id>/reports')
@@ -143,8 +143,8 @@ def delete_category_group(category_group_name):
 @bp.route('/<username>/budget/<int:budget_id>/<category_group_name>/add_category', methods=['POST'])
 @login_required
 def add_category(category_group_name):
-    form = AddCategoryForm(g.budget)
     category_group = Account.query.filter_by(budget=g.budget).filter_by(name=category_group_name).first()
+    form = AddCategoryForm(g.budget, category_group.name)
     if form.validate_on_submit():
         category = Account.query.filter_by(budget=g.budget).filter(Account.parent == category_group).filter_by(name=form.category.data).first()
         if category is not None:
@@ -176,4 +176,4 @@ def edit_category(category_group_name, category_name):
 def delete_category(category_group_name, category_name):
     Account.query.filter_by(budget=g.budget).filter(Account.parent.has(name=category_group_name)).filter_by(name=category_name).delete(synchronize_session='fetch')
     db.session.commit()
-    return jsonify(data={'message': 'success'})
+    return jsonify(data={'message': 'success'}) 
