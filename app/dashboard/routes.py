@@ -127,6 +127,7 @@ def edit_category_group(category_group_name):
         category_group.name = form.new_category_group.data
         db.session.commit()
         return jsonify(data={'message': 'success'})
+    form.new_category_group.label.text = category_group_name
     return render_template('dashboard/edit_category_group_form.html', edit_category_group_form=form, category_group=category_group)
 
 
