@@ -36,7 +36,7 @@
                     </tr>
                     {% for category in category_group.children %}
                         <tr class="budget-category-{{ category_group.id }} collapse show">
-                            <th scope="row">{{ category.name }}</th>
+                            <th scope="row" data-toggle="modal" data-target="#editCategoryModal"> {{ category.name }} </th>
                             <td>$0.00</td>
                             <td>$0.00</td>
                             <td>$0.00</td>
@@ -73,6 +73,15 @@
             </div>
         </div>
     </div>
+
+    <!-- 'Edit Category Group' modal  -->
+    <div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                {% include 'dashboard/edit_category_form.html' %}
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block scripts %}
@@ -82,12 +91,13 @@
     <script>
         var edit_category_group_default_url;
         var add_category_default_url;
+        var edit_category_default_url;
 
         $(function () {
             $('#editCategoryGroupModal').on('show.bs.modal', function (event) {
                 var category_group = $(event.relatedTarget).text().trim();
-                edit_category_group_default_url = $(event.target).find('form:first').attr('action');
-                form = $(event.target).find('form:first');
+                var form = $(event.target).find('form:first');
+                edit_category_group_default_url = form.attr('action');
                 form.find('label[for="new_category_group"]').text(category_group);
                 form.attr('action', $(event.target).find('form:first').attr('action') + '/edit_category_group/' + category_group);
             });
@@ -97,7 +107,7 @@
             });
 
             $('#editCategoryGroupModal .btn.btn-danger').on('click', function (event) {
-                form = $(this).closest('form');
+                var form = $(this).closest('form');
 
                 $.post(form.attr('action') + '/delete').done(function (data) {
                     if (typeof data.data !== 'undefined' && data.data.message === 'success') {
@@ -106,15 +116,38 @@
                 });
             });
 
-
             $('#addCategoryModal').on('show.bs.modal', function (event) {
                 var category_group = $(event.relatedTarget).parent().text().trim();
-                add_category_default_url = $(event.target).find('form:first').attr('action');
-                $(event.target).find('form:first').attr('action', $(event.target).find('form:first').attr('action') + '/' + category_group + '/add_category');
+                var form = $(event.target).find('form:first');
+                add_category_default_url = form.attr('action');
+                form.attr('action', form.attr('action') + '/' + category_group + '/add_category');
             });
 
             $('#addCategoryModal').on('hide.bs.modal', function (event) {
                 $(event.target).find('form:first').attr('action', add_category_default_url);
+            });
+
+            $('#editCategoryModal').on('show.bs.modal', function (event) {
+                var category_group = $(event.relatedTarget).closest('tbody').find('.category-group-name span[data-target="#editCategoryGroupModal"]').text().trim();
+                var category = $(event.relatedTarget).text().trim();
+                var form = $(event.target).find('form:first');
+                edit_category_default_url = form.attr('action');
+                form.find('label[for="new_category"]').text(category);
+                form.attr('action', form.attr('action') + '/' + category_group + '/edit_category/' + category);
+            });
+
+            $('#editCategoryModal').on('hide.bs.modal', function (event) {
+                $(event.target).find('form:first').attr('action', edit_category_default_url);
+            });
+
+            $('#editCategoryModal .btn.btn-danger').on('click', function (event) {
+                var form = $(this).closest('form');
+
+                $.post(form.attr('action') + '/delete').done(function (data) {
+                    if (typeof data.data !== 'undefined' && data.data.message === 'success') {
+                        location.reload();
+                    }
+                });
             });
         });
 
