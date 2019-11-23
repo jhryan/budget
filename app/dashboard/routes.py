@@ -16,6 +16,7 @@ from app.dashboard import bp
 from app.dashboard.forms import AddAccountForm
 from app.dashboard.forms import AddCategoryForm
 from app.dashboard.forms import AddCategoryGroupForm
+from app.dashboard.forms import EditCategoryGroupForm
 from app.models import Account
 from app.models import Budget
 from app.models import User
@@ -66,7 +67,7 @@ def before_request():
 @login_required
 def budget():
     category_groups = Account.query.filter_by(budget=g.budget).filter(Account.parent.has(name='Budget')).all()
-    return render_template('dashboard/budget.html', title='Dashboard', add_account_form=AddAccountForm(g.budget), category_group_form=AddCategoryGroupForm(g.budget), add_category_form=AddCategoryForm(g.budget), user=g.user, budget=g.budget, accounts=g.accounts, category_groups=category_groups)
+    return render_template('dashboard/budget.html', title='Dashboard', add_account_form=AddAccountForm(g.budget), category_group_form=AddCategoryGroupForm(g.budget), edit_category_group_form=EditCategoryGroupForm(g.budget, ''), add_category_form=AddCategoryForm(g.budget), user=g.user, budget=g.budget, accounts=g.accounts, category_groups=category_groups)
 
 
 @bp.route('/<username>/budget/<int:budget_id>/reports')
@@ -115,6 +116,18 @@ def add_category_group():
         db.session.commit()
         return jsonify(data={'message': 'success'})
     return render_template('dashboard/add_category_group_form.html', category_group_form=form)
+
+
+@bp.route('/<username>/budget/<int:budget_id>/edit_category_group/<category_group_name>', methods=['POST'])
+@login_required
+def edit_category_group(category_group_name):
+    form = EditCategoryGroupForm(g.budget, category_group_name)
+    category_group = Account.query.filter_by(budget=g.budget).filter_by(name=category_group_name).first()
+    if form.validate_on_submit():
+        category_group.name = form.new_category_group.data
+        db.session.commit()
+        return jsonify(data={'message': 'success'})
+    return render_template('dashboard/edit_category_group_form.html', edit_category_group_form=form, category_group=category_group)
 
 
 @bp.route('/<username>/budget/<int:budget_id>/<category_group_name>/add_category', methods=['POST'])

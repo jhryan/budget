@@ -25,8 +25,8 @@
                             <span class="expander" data-target=".budget-category-{{ category_group.id }}" data-toggle="collapse" aria-expanded="true">
                                 <span data-feather="chevron-down"></span>
                             </span>
-                            <span data-toggle="modal" data-target="#editCategoryGroupModal">
-                                {{ category_group.name }}
+                            <span>
+                                <span data-toggle="modal" data-target="#editCategoryGroupModal"> {{ category_group.name }} </span>
                                 <span data-toggle="modal" data-target="#addCategoryModal" data-feather="plus-circle"></span>
                             </span>
                         </th>
@@ -56,6 +56,15 @@
         </div>
     </div>
 
+    <!-- 'Edit Category Group' modal  -->
+    <div class="modal fade" id="editCategoryGroupModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                {% include 'dashboard/edit_category_group_form.html' %}
+            </div>
+        </div>
+    </div>
+
     <!-- 'Add Category' modal  -->
     <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -71,17 +80,30 @@
     {{ super() }}
 
     <script>
-        var form_default_url;
+        var edit_category_group_default_url;
+        var add_category_default_url;
 
         $(function () {
-            $('#addCategoryModal').on('shown.bs.modal', function (event) {
+            $('#editCategoryGroupModal').on('shown.bs.modal', function (event) {
                 var category_group = $(event.relatedTarget).text().trim();
-                form_default_url = $(event.target).find('form:first').attr('action');
+                edit_category_group_default_url = $(event.target).find('form:first').attr('action');
+                form = $(event.target).find('form:first');
+                form.find('label[for="new_category_group"]').text(category_group);
+                form.attr('action', $(event.target).find('form:first').attr('action') + '/edit_category_group/' + category_group);
+            });
+
+            $('#editCategoryGroupModal').on('hidden.bs.modal', function (event) {
+                $(event.target).find('form:first').attr('action', edit_category_group_default_url);
+            });
+
+            $('#addCategoryModal').on('shown.bs.modal', function (event) {
+                var category_group = $(event.relatedTarget).parent().text().trim();
+                add_category_default_url = $(event.target).find('form:first').attr('action');
                 $(event.target).find('form:first').attr('action', $(event.target).find('form:first').attr('action') + '/' + category_group + '/add_category');
             });
 
             $('#addCategoryModal').on('hidden.bs.modal', function (event) {
-                $(event.target).find('form:first').attr('action', form_default_url);
+                $(event.target).find('form:first').attr('action', add_category_default_url);
             });
         });
 

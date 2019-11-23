@@ -1,0 +1,13 @@
+{% from '_formhelpers.html' import form_group %}
+{% set action = url_for('dashboard.edit_category_group', category_group_name=category_group.name) if category_group else url_for('dashboard.budget') %}
+
+<form class="form-floating" method="post" action="{{ action }}" novalidate>
+    {{ edit_category_group_form.hidden_tag() }}
+    <div class="modal-body">
+        {{ form_group(edit_category_group_form.new_category_group) }}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        {{ edit_category_group_form.submit(class_="btn btn-primary") }}
+    </div>
+</form>
