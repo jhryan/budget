@@ -174,6 +174,6 @@ def edit_category(category_group_name, category_name):
 @bp.route('/<username>/budget/<int:budget_id>/<category_group_name>/edit_category/<category_name>/delete', methods=['POST'])
 @login_required
 def delete_category(category_group_name, category_name):
-    Account.query.filter_by(budget=g.budget).filter(Account.parent.has(name=category_group_name)).filter_by(name=category_name).delete()
+    Account.query.filter_by(budget=g.budget).filter(Account.parent.has(name=category_group_name)).filter_by(name=category_name).delete(synchronize_session='fetch')
     db.session.commit()
     return jsonify(data={'message': 'success'})
