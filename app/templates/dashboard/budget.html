@@ -96,6 +96,17 @@
                 $(event.target).find('form:first').attr('action', edit_category_group_default_url);
             });
 
+            $('#editCategoryGroupModal .btn.btn-danger').on('click', function (event) {
+                form = $(this).closest('form');
+
+                $.post(form.attr('action') + '/delete').done(function (data) {
+                    if (typeof data.data !== 'undefined' && data.data.message === 'success') {
+                        location.reload();
+                    }
+                });
+            });
+
+
             $('#addCategoryModal').on('show.bs.modal', function (event) {
                 var category_group = $(event.relatedTarget).parent().text().trim();
                 add_category_default_url = $(event.target).find('form:first').attr('action');

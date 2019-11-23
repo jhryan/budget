@@ -131,6 +131,14 @@ def edit_category_group(category_group_name):
     return render_template('dashboard/edit_category_group_form.html', edit_category_group_form=form, category_group=category_group)
 
 
+@bp.route('/<username>/budget/<int:budget_id>/edit_category_group/<category_group_name>/delete', methods=['POST'])
+@login_required
+def delete_category_group(category_group_name):
+    Account.query.filter_by(budget=g.budget).filter_by(name=category_group_name).delete()
+    db.session.commit()
+    return jsonify(data={'message': 'success'})
+
+
 @bp.route('/<username>/budget/<int:budget_id>/<category_group_name>/add_category', methods=['POST'])
 @login_required
 def add_category(category_group_name):
