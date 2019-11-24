@@ -100,19 +100,24 @@
 
             // create sortable table rows - whilst freezing/fixing certain rows in place
             var pid, freezed;
+            var startElement;
             $('.sortable').sortable({
                 animation: 150,
                 filter: ".nosort",
                 group: "category-group",
                 onStart: function () {
+                    startElement = this.el;
                     freezed = this.el.querySelector('.nosort');
                 },
                 onMove: function (event) {  
                     clearTimeout(pid);
                     pid = setTimeout(function () {
                         var list = event.to;
-
-                        if (list.firstElementChild === freezed) {
+                        
+                        if (list !== startElement)
+                        {
+                            list.insertBefore(list.querySelector('.nosort'), list.children[0]);
+                        } else if (list.firstElementChild === freezed) {
                             list.insertBefore(freezed, list.children[0]);
                         }
                     }, 0);
