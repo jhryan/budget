@@ -7,6 +7,7 @@ from flask import g
 from flask import jsonify
 from flask import redirect
 from flask import render_template
+from flask import request
 from flask import url_for
 from flask_login import current_user
 from flask_login import login_required
@@ -175,5 +176,15 @@ def edit_category(category_group_name, category_name):
 @login_required
 def delete_category(category_group_name, category_name):
     Account.query.filter_by(budget=g.budget).filter(Account.parent.has(name=category_group_name)).filter_by(name=category_name).delete(synchronize_session='fetch')
+    db.session.commit()
+    return jsonify(data={'message': 'success'}) 
+
+
+@bp.route('/<username>/budget/<int:budget_id>/change_category_group', methods=['POST'])
+@login_required
+def change_category_group():
+    category = Account.query.filter_by(budget=g.budget).filter(Account.parent.has(name=request.form['old_category_group'])).filter_by(name=request.form['category']).first()
+    new_category_group = Account.query.filter_by(budget=g.budget).filter(Account.parent.has(name='Budget')).filter_by(name=request.form['new_category_group']).first()
+    category.parent = new_category_group
     db.session.commit()
     return jsonify(data={'message': 'success'}) 

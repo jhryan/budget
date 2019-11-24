@@ -122,6 +122,18 @@
                     }
 
                     return freezed !== event.related;
+                },
+                onAdd: function(event) {
+                    var category = $(event.item).find('th').text().trim();
+                    var old_category_group = $(event.from).find('.category-group-name').text().trim();
+                    var new_category_group = $(event.to).find('.category-group-name').text().trim();
+
+                    $.post( "{{ url_for('dashboard.change_category_group') }}", {
+                        'category': category, 
+                        'old_category_group': old_category_group, 
+                        'new_category_group': new_category_group
+                        }
+                    );
                 }
             });
 
