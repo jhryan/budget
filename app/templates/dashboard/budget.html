@@ -19,8 +19,8 @@
         </thead>
         {% if category_groups %}
             {% for category_group in category_groups %}
-                <tbody>
-                    <tr class="thead-light">
+                <tbody class="sortable">
+                    <tr class="thead-light nosort">
                         <th>
                             <span class="expander" data-target=".budget-category-{{ category_group.id }}" data-toggle="collapse" aria-expanded="true">
                                 <span data-feather="chevron-down"></span>
@@ -88,12 +88,43 @@
 
     {{ super() }}
 
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-sortablejs@latest/jquery-sortable.js"></script>
+
     <script>
         var edit_category_group_default_url;
         var add_category_default_url;
         var edit_category_default_url;
 
         $(function () {
+
+            // create sortable table rows - whilst freezing/fixing certain rows in place
+            var pid, freezed;
+            $('.sortable').sortable({
+                animation: 150,
+                filter: ".nosort",
+                group: "category-group",
+                onStart: function () {
+                    freezed = this.el.querySelector('.nosort');
+                },
+                onMove: function (event) {  
+                    clearTimeout(pid);
+                    pid = setTimeout(function () {
+                        var list = event.to;
+
+                        if (list.firstElementChild === freezed) {
+                            list.insertBefore(freezed, list.children[0]);
+                        }
+                    }, 0);
+
+                    if (event.related.nextElementSibling === freezed) {
+                        return -1;
+                    }
+
+                    return freezed !== event.related;
+                }
+            });
+
             $('#editCategoryGroupModal').on('show.bs.modal', function (event) {
                 var category_group = $(event.relatedTarget).text().trim();
                 var form = $(event.target).find('form:first');
