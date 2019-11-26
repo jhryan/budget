@@ -1,4 +1,5 @@
 from datetime import datetime
+from dateutil import relativedelta
 
 from flask import abort
 from flask import current_app
@@ -64,12 +65,27 @@ def before_request():
     g.accounts = accounts
 
 
-@bp.route('/<username>/budget/', defaults={'budget_id': None})
-@bp.route('/<username>/budget/<int:budget_id>')
+@bp.route('/<username>/budget/', defaults={'budget_id': None, 'month': datetime.utcnow().strftime('%Y%m')})
+@bp.route('/<username>/budget/<int:budget_id>', defaults={'month': datetime.utcnow().strftime('%Y%m')})
+@bp.route('/<username>/budget/<int:budget_id>/<month>')
 @login_required
-def budget():
+def budget(month):
     category_groups = Account.query.filter_by(budget=g.budget).filter(Account.parent.has(name='Budget')).all()
-    return render_template('dashboard/budget.html', title='Dashboard', add_account_form=AddAccountForm(g.budget), category_group_form=AddCategoryGroupForm(g.budget), edit_category_group_form=EditCategoryGroupForm(g.budget, ''), add_category_form=AddCategoryForm(g.budget, ''), edit_category_form=EditCategoryForm(g.budget, '', ''), user=g.user, budget=g.budget, accounts=g.accounts, category_groups=category_groups)
+    return render_template('dashboard/budget.html', title='Dashboard', month=datetime.strptime(month, '%Y%m'), add_account_form=AddAccountForm(g.budget), category_group_form=AddCategoryGroupForm(g.budget), edit_category_group_form=EditCategoryGroupForm(g.budget, ''), add_category_form=AddCategoryForm(g.budget, ''), edit_category_form=EditCategoryForm(g.budget, '', ''), user=g.user, budget=g.budget, accounts=g.accounts, category_groups=category_groups)
+
+
+@bp.route('/<username>/budget/<int:budget_id>/<month>/prev_month')
+@login_required
+def budget_prev_month(month):
+    prev_month = datetime.strptime(month, '%Y%m') - relativedelta.relativedelta(months=1)
+    return redirect(url_for('dashboard.budget', month=prev_month.strftime('%Y%m')))
+
+
+@bp.route('/<username>/budget/<int:budget_id>/<month>/next_month')
+@login_required
+def budget_next_month(month):
+    next_month = datetime.strptime(month, '%Y%m') + relativedelta.relativedelta(months=1)
+    return redirect(url_for('dashboard.budget', month=next_month.strftime('%Y%m')))
 
 
 @bp.route('/<username>/budget/<int:budget_id>/reports')

@@ -1,13 +1,43 @@
 {% extends 'dashboard/base.html' %}
 {% set active_page = 'dashboard.budget' -%}
 
+{% block styles %}
+    {{ super() }}
+
+    <style>
+        .calendar a {
+            color: #17a2b8;
+        }
+
+        .calendar a:hover {
+            color: #22cee9;
+        }
+    </style>
+{% endblock %}
+
 {% block dashboard_content %}
-    <div class="budget-toolbar text-muted p-1">
-        <span data-toggle="modal" data-target="#addCategoryGroupModal">
-            <span data-feather="plus-circle"></span>
-            Category Group
-        </span>
-    </div>
+    <header>
+        <div class="budget-header d-flex py-3 bg-dark text-light">
+            {% set month_url = month.strftime('%Y%m') %}
+            <div class="calendar d-flex justify-content-center align-items-center">
+                <a class="btn" href="{{ url_for('dashboard.budget_prev_month', month=month_url) }}">
+                    <span data-feather="arrow-left-circle"></span>
+                </a>
+                <span>
+                    {{ month.strftime('%b %Y') }}
+                </span>
+                <a class="btn" href="{{ url_for('dashboard.budget_next_month', month=month_url) }}">
+                    <span data-feather="arrow-right-circle"></span>
+                </a>
+            </div>
+        </div>
+        <div class="budget-toolbar text-muted p-1">
+            <span data-toggle="modal" data-target="#addCategoryGroupModal">
+                <span data-feather="plus-circle"></span>
+                Category Group
+            </span>
+        </div>
+    </header>
     <table class="table table-sm">
         <thead>
             <tr>
