@@ -12,6 +12,47 @@
         .calendar a:hover {
             color: #22cee9;
         }
+
+        .table .feather {
+            width: 20px;
+            height: 20px;
+            vertical-align: text-bottom;
+        }
+
+        .budget-toolbar {
+            font-size: .9rem;
+        }
+
+        .budget-toolbar .feather {
+            width: 16px;
+            height: 16px;
+            vertical-align: middle;
+        }
+
+        .budget-toolbar span:hover {
+            color: #212529;
+            cursor: pointer;
+        }
+
+        .category-group-name {
+            cursor: pointer;
+        }
+
+        .category-group-name .feather {
+            display: none;
+        }
+
+        .category-group-name:hover .feather {
+            display: inline;
+        }
+
+        .category-group-name:hover .feather:hover {
+            color: #212529;
+        }
+
+        .category-name {
+            cursor: pointer;
+        }
     </style>
 {% endblock %}
 
@@ -66,7 +107,7 @@
                     </tr>
                     {% for category in category_group.children %}
                         <tr class="budget-category-{{ category_group.id }} collapse show" data-id="category-{{ category.id }}">
-                            <th scope="row" data-toggle="modal" data-target="#editCategoryModal"> {{ category.name }} </th>
+                            <th class="category-name" scope="row" data-toggle="modal" data-target="#editCategoryModal"> {{ category.name }} </th>
                             <td>$0.00</td>
                             <td>$0.00</td>
                             <td>$0.00</td>
