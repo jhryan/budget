@@ -53,6 +53,17 @@
         .category-name {
             cursor: pointer;
         }
+
+        .budget-details {
+            position: fixed;
+            top: 101px;
+            bottom: 0;
+            right: 0;
+            padding: 0;
+            font-size: .875rem;
+            border-top: 1px solid rgb(222, 226, 230);
+            width: 25%;
+        }
     </style>
 {% endblock %}
 
@@ -79,44 +90,73 @@
             </span>
         </div>
     </header>
-    <table class="table table-sm">
-        <thead>
-            <tr>
-                <th scope="col">Category</th>
-                <th scope="col">Budgeted</th>
-                <th scope="col">Activity</th>
-                <th scope="col">Available</th>
-            </tr>
-        </thead>
-        {% if category_groups %}
-            {% for category_group in category_groups %}
-                <tbody id="budget-category-{{ category_group.id }}" class="sortable">
-                    <tr class="thead-light nosort" data-id="category-group-{{ category_group.id }}">
-                        <th>
-                            <span class="expander" data-target=".budget-category-{{ category_group.id }}" data-toggle="collapse" aria-expanded="true">
-                                <span data-feather="chevron-down"></span>
-                            </span>
-                            <span class="category-group-name">
-                                <span data-toggle="modal" data-target="#editCategoryGroupModal"> {{ category_group.name }} </span>
-                                <span data-toggle="modal" data-target="#addCategoryModal" data-feather="plus-circle"></span>
-                            </span>
-                        </th>
-                        <th>$0.00</td>
-                        <th>$0.00</td>
-                        <th>$0.00</td>
-                    </tr>
-                    {% for category in category_group.children %}
-                        <tr class="budget-category-{{ category_group.id }} collapse show" data-id="category-{{ category.id }}">
-                            <th class="category-name" scope="row" data-toggle="modal" data-target="#editCategoryModal"> {{ category.name }} </th>
-                            <td>$0.00</td>
-                            <td>$0.00</td>
-                            <td>$0.00</td>
+
+    <section role="main">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th scope="col">Category</th>
+                    <th scope="col">Budgeted</th>
+                    <th scope="col">Activity</th>
+                    <th scope="col">Available</th>
+                </tr>
+            </thead>
+            {% if category_groups %}
+                {% for category_group in category_groups %}
+                    <tbody id="budget-category-{{ category_group.id }}" class="sortable">
+                        <tr class="thead-light nosort" data-id="category-group-{{ category_group.id }}">
+                            <th>
+                                <span class="expander" data-target=".budget-category-{{ category_group.id }}" data-toggle="collapse" aria-expanded="true">
+                                    <span data-feather="chevron-down"></span>
+                                </span>
+                                <span class="category-group-name">
+                                    <span data-toggle="modal" data-target="#editCategoryGroupModal"> {{ category_group.name }} </span>
+                                    <span data-toggle="modal" data-target="#addCategoryModal" data-feather="plus-circle"></span>
+                                </span>
+                            </th>
+                            <th>$0.00</td>
+                            <th>$0.00</td>
+                            <th>$0.00</td>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            {% endfor %}
-        {% endif %}
-    </table>
+                        {% for category in category_group.children %}
+                            <tr class="budget-category-{{ category_group.id }} collapse show" data-id="category-{{ category.id }}">
+                                <th class="category-name" scope="row" data-toggle="modal" data-target="#editCategoryModal"> {{ category.name }} </th>
+                                <td>$0.00</td>
+                                <td>$0.00</td>
+                                <td>$0.00</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                {% endfor %}
+            {% endif %}
+        </table>
+    </section>
+    
+    <aside role="complementary" class="budget-details bg-light">
+        <div class="d-flex flex-column justify-content-end align-items-center py-3">
+            <h6 class="text-uppercase text-muted mb-1">Total Budgeted</h6>
+            <h2 class="mb-0">$0.00</h2>
+        </div>
+        <hr class="my-0 mx-5">
+    
+        <div class="d-flex flex-column justify-content-end align-items-center py-3">
+            <h6 class="text-uppercase text-muted mb-1">Total Activity</h6>
+            <h2 class="mb-0">$0.00</h2>
+        </div>
+        <hr class="my-0 mx-5">
+    
+        <div class="d-flex flex-column justify-content-end align-items-center py-3">
+            <h6 class="text-uppercase text-muted mb-1">Total Available</h6>
+            <h2 class="mb-0">$0.00</h2>
+        </div>
+        <hr class="my-0 mx-5">
+    
+        <div class="d-flex flex-column justify-content-end align-items-center py-3">
+            <h6 class="text-uppercase text-muted mb-1">Total Inflows</h6>
+            <h2 class="mb-0">$0.00</h2>
+        </div>
+        <hr class="my-0 mx-5">
+    </aside>
 
     <!-- 'Add Category Group' modal  -->
     <div class="modal fade" id="addCategoryGroupModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -126,7 +166,7 @@
             </div>
         </div>
     </div>
-
+        
     <!-- 'Edit Category Group' modal  -->
     <div class="modal fade" id="editCategoryGroupModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -135,7 +175,7 @@
             </div>
         </div>
     </div>
-
+        
     <!-- 'Add Category' modal  -->
     <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -144,7 +184,7 @@
             </div>
         </div>
     </div>
-
+        
     <!-- 'Edit Category Group' modal  -->
     <div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -152,7 +192,7 @@
                 {% include 'dashboard/edit_category_form.html' %}
             </div>
         </div>
-    </div>
+    </div>   
 {% endblock %}
 
 {% block scripts %}
