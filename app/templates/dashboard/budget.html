@@ -136,9 +136,12 @@
                                     <span data-toggle="modal" data-target="#addCategoryModal" data-feather="plus-circle"></span>
                                 </span>
                             </th>
-                            <th><span class="px-1">$0.00</span></td>
-                            <th><span class="px-1">$0.00</span></td>
-                            <th><span class="px-1">$0.00</span></td>
+                            <th>
+                                {% set category_group_budgeted = category_group.children.postings | sum(attribute='amount') %}
+                                <span class="px-1">{{ '$%.2f'|format(category_group_budgeted) }}</span>
+                            </th>
+                            <th><span class="px-1">$0.00</span></th>
+                            <th><span class="px-1">$0.00</span></th>
                         </tr>
                         {% for category in category_group.children %}
                             <tr class="budget-category-{{ category_group.id }} collapse show" data-id="category-{{ category.id }}">

@@ -85,6 +85,9 @@ class Account(db.Model):
 
     def __repr__(self):
         return f'<Account {self.name}>'
+    
+    def balance(self):
+        return sum(account.balance() for account in self.children) + sum(posting.amount for posting in self.postings)
 
 
 class Journal(db.Model):
