@@ -144,7 +144,8 @@
                             <tr class="budget-category-{{ category_group.id }} collapse show" data-id="category-{{ category.id }}">
                                 <th class="category-name" scope="row" data-toggle="modal" data-target="#editCategoryModal"> {{ category.name }} </th>
                                 <td>
-                                    <input type="text" value="$0.00" class="px-1">
+                                    {% set budgeted_amount = category.postings | sum(attribute='amount') %}
+                                    <input type="text" value="{{ '$%.2f'|format(budgeted_amount) }}" class="px-1">
                                 </td>
                                 <td><span class="px-1">$0.00</span></td>
                                 <td><span class="px-1">$0.00</span></td>
