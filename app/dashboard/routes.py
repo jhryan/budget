@@ -103,11 +103,15 @@ def budget_amount(month):
 
     category = Account.query.filter_by(id=category_id).first()
     budget_equity = Account.query.filter_by(budget=g.budget).filter_by(type='Equity').filter_by(name='Budget Equity').first()
+
+    if amount == category.balance():
+        return jsonify(data={'message': 'fail'})
     
     journal_entry = Journal(date=month)
 
     category_posting = Posting(account=category, journal_entry=journal_entry, amount=amount, asset_type=default_asset_type)
     budget_equity_posting = Posting(account=budget_equity, journal_entry=journal_entry, amount=-amount, asset_type=default_asset_type)
+
 
     db.session.add(journal_entry)
     db.session.add(category_posting)
