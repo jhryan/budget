@@ -374,7 +374,7 @@
                 var amount = $(this).val();
                 var category = $(this).closest("[data-id^='category-']");
 
-                $(this).val("$" + $(this).val());
+                $(this).val("$" + parseFloat($(this).val()).toFixed(2));
 
                 $.post("{{ url_for('dashboard.budget_amount', month=month.strftime('%Y%m')) }}", {
                     'category_id': category.attr('data-id').replace(/category-/, ''),
