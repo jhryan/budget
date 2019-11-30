@@ -1,5 +1,6 @@
 from datetime import datetime
 from dateutil import relativedelta
+from decimal import Decimal
 
 from flask import abort
 from flask import current_app
@@ -21,7 +22,10 @@ from app.dashboard.forms import AddCategoryGroupForm
 from app.dashboard.forms import EditCategoryForm
 from app.dashboard.forms import EditCategoryGroupForm
 from app.models import Account
+from app.models import AssetType
 from app.models import Budget
+from app.models import Journal
+from app.models import Posting
 from app.models import User
 
 
@@ -92,7 +96,25 @@ def budget_next_month(month):
 @login_required
 def budget_amount(month):
     category_id = request.form['category_id']
+    amount = Decimal(request.form['amount'])
+
+    month = datetime.strptime(month, '%Y%m')
+    default_asset_type = AssetType.query.filter_by(name='USD').first()
+
     category = Account.query.filter_by(id=category_id).first()
+    budget_equity = Account.query.filter_by(budget=g.budget).filter_by(type='Equity').filter_by(name='Budget Equity').first()
+    
+    journal_entry = Journal(date=month)
+
+    category_posting = Posting(account=category, journal_entry=journal_entry, amount=amount, asset_type=default_asset_type)
+    budget_equity_posting = Posting(account=budget_equity, journal_entry=journal_entry, amount=-amount, asset_type=default_asset_type)
+
+    db.session.add(journal_entry)
+    db.session.add(category_posting)
+    db.session.add(budget_equity_posting)
+    
+    db.session.commit()
+
     return jsonify(data={'message': 'success'})
 
 

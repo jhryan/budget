@@ -369,11 +369,14 @@
             });
 
             $("table td input[type=text]").on("focusout", function () {
-                $(this).val("$" + $(this).val());
+                var amount = $(this).val();
                 var category = $(this).closest("[data-id^='category-']");
 
+                $(this).val("$" + $(this).val());
+
                 $.post("{{ url_for('dashboard.budget_amount', month=month.strftime('%Y%m')) }}", {
-                    'category_id': category.attr('data-id').replace(/category-/, '')
+                    'category_id': category.attr('data-id').replace(/category-/, ''),
+                    'amount': amount
                     }
                 );
             });
