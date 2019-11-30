@@ -106,6 +106,9 @@ def budget_amount(month):
 
     if amount == category.balance():
         return jsonify(data={'message': 'fail'})
+    else:
+        # only submit posting for the change in budgeted amount
+        amount -= category.balance()
     
     journal_entry = Journal(date=month)
 
