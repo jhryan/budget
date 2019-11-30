@@ -137,7 +137,7 @@
                                 </span>
                             </th>
                             <th>
-                                <span class="px-1">{{ '$%.2f'|format(category_group.balance()) }}</span>
+                                <span class="category-group-balance px-1">{{ '$%.2f'|format(category_group.balance()) }}</span>
                             </th>
                             <th><span class="px-1">$0.00</span></th>
                             <th><span class="px-1">$0.00</span></th>
@@ -371,16 +371,18 @@
             });
 
             $("table td input[type=text]").on("focusout", function () {
+                var input = $(this);
                 var amount = $(this).val();
                 var category = $(this).closest("[data-id^='category-']");
-
-                $(this).val("$" + parseFloat($(this).val()).toFixed(2));
 
                 $.post("{{ url_for('dashboard.budget_amount', month=month.strftime('%Y%m')) }}", {
                     'category_id': category.attr('data-id').replace(/category-/, ''),
                     'amount': amount
                     }
-                );
+                ).done(function (response) {
+                    input.val("$" + parseFloat(response.data.category_balance).toFixed(2));
+                    input.closest('tbody').find('.category-group-balance').text("$" + parseFloat(response.data.group_balance).toFixed(2));
+                });
             });
         });
     </script>

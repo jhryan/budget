@@ -104,25 +104,23 @@ def budget_amount(month):
     category = Account.query.filter_by(id=category_id).first()
     budget_equity = Account.query.filter_by(budget=g.budget).filter_by(type='Equity').filter_by(name='Budget Equity').first()
 
-    if amount == category.balance():
-        return jsonify(data={'message': 'fail'})
-    else:
-        # only submit posting for the change in budgeted amount
+    if amount != category.balance():
+        # only submit posting for the difference in budgeted amount
         amount -= category.balance()
     
-    journal_entry = Journal(date=month)
+        journal_entry = Journal(date=month)
 
-    category_posting = Posting(account=category, journal_entry=journal_entry, amount=amount, asset_type=default_asset_type)
-    budget_equity_posting = Posting(account=budget_equity, journal_entry=journal_entry, amount=-amount, asset_type=default_asset_type)
+        category_posting = Posting(account=category, journal_entry=journal_entry, amount=amount, asset_type=default_asset_type)
+        budget_equity_posting = Posting(account=budget_equity, journal_entry=journal_entry, amount=-amount, asset_type=default_asset_type)
 
 
-    db.session.add(journal_entry)
-    db.session.add(category_posting)
-    db.session.add(budget_equity_posting)
-    
-    db.session.commit()
+        db.session.add(journal_entry)
+        db.session.add(category_posting)
+        db.session.add(budget_equity_posting)
+        
+        db.session.commit()
 
-    return jsonify(data={'message': 'success'})
+    return jsonify(data={'category_balance': str(category.balance()), 'group_balance': str(category.parent.balance())})
 
 
 @bp.route('/<username>/budget/<int:budget_id>/reports')
