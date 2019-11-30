@@ -88,6 +88,14 @@ def budget_next_month(month):
     return redirect(url_for('dashboard.budget', month=next_month.strftime('%Y%m')))
 
 
+@bp.route('/<username>/budget/<int:budget_id>/<month>/budget_amount', methods=['POST'])
+@login_required
+def budget_amount(month):
+    category_id = request.form['category_id']
+    category = Account.query.filter_by(id=category_id).first()
+    return jsonify(data={'message': 'success'})
+
+
 @bp.route('/<username>/budget/<int:budget_id>/reports')
 @login_required
 def reports():

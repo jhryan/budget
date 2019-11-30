@@ -90,9 +90,9 @@
 {% endblock %}
 
 {% block dashboard_content %}
+    {% set month_url = month.strftime('%Y%m') %}
     <header>
         <div class="budget-header d-flex py-3 bg-dark text-light">
-            {% set month_url = month.strftime('%Y%m') %}
             <div class="calendar d-flex justify-content-center align-items-center">
                 <a class="btn" href="{{ url_for('dashboard.budget_prev_month', month=month_url) }}">
                     <span data-feather="arrow-left-circle"></span>
@@ -353,5 +353,30 @@
             });
         });
 
+    </script>
+
+    <script>
+        $(function () {
+            $("table td input[type=text]").on("focus", function () {
+                $(this).val($(this).val().replace(/\$/g, ''));
+                $(this).select();
+            });
+
+            $("table td input[type=text]").on("keypress", function (event) {
+                if (event.which == 13) {
+                    $(this).blur();
+                }
+            });
+
+            $("table td input[type=text]").on("focusout", function () {
+                $(this).val("$" + $(this).val());
+                var category = $(this).closest("[data-id^='category-']");
+
+                $.post("{{ url_for('dashboard.budget_amount', month=month.strftime('%Y%m')) }}", {
+                    'category_id': category.attr('data-id').replace(/category-/, '')
+                    }
+                );
+            });
+        });
     </script>
 {% endblock %}
