@@ -137,8 +137,7 @@
                                 </span>
                             </th>
                             <th>
-                                {% set category_group_budgeted = category_group.children.postings | sum(attribute='amount') %}
-                                <span class="px-1">{{ '$%.2f'|format(category_group_budgeted) }}</span>
+                                <span class="px-1">{{ '$%.2f'|format(category_group.balance()) }}</span>
                             </th>
                             <th><span class="px-1">$0.00</span></th>
                             <th><span class="px-1">$0.00</span></th>
@@ -147,8 +146,7 @@
                             <tr class="budget-category-{{ category_group.id }} collapse show" data-id="category-{{ category.id }}">
                                 <th class="category-name" scope="row" data-toggle="modal" data-target="#editCategoryModal"> {{ category.name }} </th>
                                 <td>
-                                    {% set budgeted_amount = category.postings | sum(attribute='amount') %}
-                                    <input type="text" value="{{ '$%.2f'|format(budgeted_amount) }}" class="px-1">
+                                    <input type="text" value="{{ '$%.2f'|format(category.balance()) }}" class="px-1">
                                 </td>
                                 <td><span class="px-1">$0.00</span></td>
                                 <td><span class="px-1">$0.00</span></td>
