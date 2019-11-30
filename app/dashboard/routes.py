@@ -104,9 +104,9 @@ def budget_amount(month):
     category = Account.query.filter_by(id=category_id).first()
     budget_equity = Account.query.filter_by(budget=g.budget).filter_by(type='Equity').filter_by(name='Budget Equity').first()
 
-    if amount != category.balance():
+    if amount != category.balance(month=month):
         # only submit posting for the difference in budgeted amount
-        amount -= category.balance()
+        amount -= category.balance(month=month)
     
         journal_entry = Journal(date=month)
 
@@ -120,7 +120,7 @@ def budget_amount(month):
         
         db.session.commit()
 
-    return jsonify(data={'category_balance': str(category.balance()), 'group_balance': str(category.parent.balance())})
+    return jsonify(data={'category_balance': str(category.balance(month=month)), 'group_balance': str(category.parent.balance(month=month))})
 
 
 @bp.route('/<username>/budget/<int:budget_id>/reports')

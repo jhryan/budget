@@ -86,8 +86,11 @@ class Account(db.Model):
     def __repr__(self):
         return f'<Account {self.name}>'
     
-    def balance(self):
-        return sum(account.balance() for account in self.children) + sum(posting.amount for posting in self.postings)
+    def balance(self, month=None):
+        if month is None:
+            return sum(account.balance() for account in self.children) + sum(posting.amount for posting in self.postings)
+        else:
+            return sum(account.balance(month=month) for account in self.children) + sum(posting.amount for posting in self.postings if posting.journal_entry.date.year == month.year and posting.journal_entry.date.month == month.month)
 
 
 class Journal(db.Model):
