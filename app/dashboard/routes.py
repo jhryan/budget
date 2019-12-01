@@ -68,13 +68,19 @@ def before_request():
 
     category_groups = Account.query.filter_by(budget=budget) \
         .filter(Account.parent.has(name='Budget')).all()
+
     category_group_names = [category_group.name
                             for category_group in category_groups]
+    expense_group_names = category_group_names
+
     accounts = Account.query.filter_by(budget=budget) \
         .filter(Account.name != 'Budget') \
-        .filter(Account.name != 'Budget Equity') \
         .filter(~Account.parent.has(Account.name == 'Budget')) \
         .filter(~Account.parent.has(Account.name.in_(category_group_names))) \
+        .filter(Account.name != 'Budget Equity') \
+        .filter(Account.name != 'Budget Expenses') \
+        .filter(~Account.parent.has(Account.name == 'Budget Expenses')) \
+        .filter(~Account.parent.has(Account.name.in_(expense_group_names))) \
         .all()
 
     g.user = user
@@ -224,14 +230,27 @@ def add_category_group():
     form = AddCategoryGroupForm(g.budget)
     if form.validate_on_submit():
         budget_account = Account.query.filter_by(budget=g.budget) \
-                         .filter_by(name='Budget').first()
-        account = Account(name=form.category_group.data,
-                          type='Asset',
-                          budget=g.budget,
-                          parent=budget_account)
-        db.session.add(account)
+            .filter_by(name='Budget').first()
+
+        expense_account = Account.query.filter_by(budget=g.budget) \
+            .filter_by(name='Budget Expenses').first()
+
+        category_group = Account(name=form.category_group.data,
+                                 type='Asset',
+                                 budget=g.budget,
+                                 parent=budget_account)
+
+        expense_group = Account(name=form.category_group.data,
+                                type='Expense',
+                                budget=g.budget,
+                                parent=expense_account)
+
+        db.session.add(category_group)
+        db.session.add(expense_group)
         db.session.commit()
+
         return jsonify(data={'message': 'success'})
+
     return render_template('dashboard/add_category_group_form.html',
                            category_group_form=form)
 
