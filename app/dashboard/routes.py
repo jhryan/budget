@@ -72,6 +72,7 @@ def before_request():
                             for category_group in category_groups]
     accounts = Account.query.filter_by(budget=budget) \
         .filter(Account.name != 'Budget') \
+        .filter(Account.name != 'Budget Equity') \
         .filter(~Account.parent.has(Account.name == 'Budget')) \
         .filter(~Account.parent.has(Account.name.in_(category_group_names))) \
         .all()
@@ -90,8 +91,10 @@ def before_request():
 @login_required
 def budget(month):
     category_groups = Account.query.filter_by(budget=g.budget) \
-        .filter(Account.parent.has(name='Budget')).all()
-    return render_template('dashboard/budget.html', title='Dashboard',
+        .filter(Account.parent.has(name='Budget')) \
+        .filter(Account.name != 'Unbudgeted').all()
+    return render_template('dashboard/budget.html',
+                           title='Dashboard',
                            month=datetime.strptime(month, '%Y%m'),
                            add_account_form=AddAccountForm(g.budget),
                            category_group_form=AddCategoryGroupForm(g.budget),
