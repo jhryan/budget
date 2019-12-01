@@ -284,7 +284,15 @@ def edit_category_group(category_group_name):
 @login_required
 def delete_category_group(category_group_name):
     Account.query.filter_by(budget=g.budget) \
-        .filter_by(name=category_group_name).delete()
+        .filter(Account.parent.has(Account.name == 'Budget')) \
+        .filter_by(name=category_group_name) \
+        .delete(synchronize_session='fetch')
+
+    Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent.has(Account.name == 'Budget Expenses')) \
+        .filter_by(name=category_group_name) \
+        .delete(synchronize_session='fetch')
+
     db.session.commit()
     return jsonify(data={'message': 'success'})
 
