@@ -21,9 +21,11 @@ class User(UserMixin, db.Model):
     last_budget_id = db.Column(db.Integer, db.ForeignKey('budget.id'))
     last_budget = db.relationship('Budget', foreign_keys=[last_budget_id])
 
-    budgets = db.relationship('Budget', foreign_keys=[id], primaryjoin='Budget.user_id == User.id', backref=db.backref('user', uselist=False), lazy=True)
+    budgets = db.relationship('Budget', foreign_keys=[id],
+                              primaryjoin='Budget.user_id == User.id',
+                              backref=db.backref('user', uselist=False),
+                              lazy=True)
 
-    
     def __repr__(self):
         return f'<User {self.username}>'
 
@@ -49,7 +51,7 @@ class User(UserMixin, db.Model):
         try:
             id = jwt.decode(token, current_app.config['SECRET_KEY'],
                             algorithms=['HS256'])['reset_password']
-        except:
+        except jwt.exceptions.InvalidTokenError:
             return
         return User.query.get(id)
 
@@ -62,7 +64,7 @@ def load_user(id):
 class Budget(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
-    
+
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     accounts = db.relationship('Account', backref='budget', lazy=True)
@@ -71,26 +73,41 @@ class Budget(db.Model):
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
-    type = db.Column(db.String(9), db.CheckConstraint("type IN ('Asset', 'Liability', 'Equity', 'Income', 'Expense')", name='types'), nullable=False)
+    type = db.Column(db.String(9),
+                     db.CheckConstraint("type IN ('Asset', 'Liability',"
+                                        "'Equity', 'Income',"
+                                        "'Expense')", name='types'),
+                     nullable=False)
 
-    budget_id = db.Column(db.Integer, db.ForeignKey('budget.id'), nullable=False)
+    budget_id = db.Column(db.Integer, db.ForeignKey('budget.id'),
+                          nullable=False)
 
     parent_id = db.Column(db.Integer, db.ForeignKey('account.id'))
-    parent = db.relationship('Account', backref='children', remote_side=[id], lazy=True)
-    
+    parent = db.relationship('Account', backref='children', remote_side=[id],
+                             lazy=True)
+
     postings = db.relationship('Posting', backref='account', lazy=True)
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow,
+                           onupdate=datetime.utcnow)
 
     def __repr__(self):
         return f'<Account {self.name}>'
-    
+
     def balance(self, month=None):
         if month is None:
-            return sum(account.balance() for account in self.children) + sum(posting.amount for posting in self.postings)
+            children_balance = sum(account.balance()
+                                   for account in self.children)
+            self_balance = sum(posting.amount for posting in self.postings)
         else:
-            return sum(account.balance(month=month) for account in self.children) + sum(posting.amount for posting in self.postings if posting.journal_entry.date.year == month.year and posting.journal_entry.date.month == month.month)
+            children_balance = sum(account.balance(month=month)
+                                   for account in self.children)
+            self_balance = sum(posting.amount for posting in self.postings if
+                               posting.journal_entry.date.year == month.year
+                               and
+                               posting.journal_entry.date.month == month.month)
+        return children_balance + self_balance
 
 
 class Journal(db.Model):
@@ -102,7 +119,8 @@ class Journal(db.Model):
     postings = db.relationship('Posting', backref='journal_entry', lazy=True)
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow,
+                           onupdate=datetime.utcnow)
 
     def __repr__(self):
         return f'<Journal {self.description}>'
@@ -110,18 +128,22 @@ class Journal(db.Model):
 
 class Posting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
-    journal_id = db.Column(db.Integer, db.ForeignKey('journal.id'), nullable=False)
+    account_id = db.Column(db.Integer, db.ForeignKey('account.id'),
+                           nullable=False)
+    journal_id = db.Column(db.Integer, db.ForeignKey('journal.id'),
+                           nullable=False)
 
     amount = db.Column(db.Numeric(precision=38, scale=28), nullable=False)
-    asset_type_id = db.Column(db.Integer, db.ForeignKey('asset_type.id'), nullable=False)
+    asset_type_id = db.Column(db.Integer, db.ForeignKey('asset_type.id'),
+                              nullable=False)
     asset_type = db.relationship('AssetType')
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow,
+                           onupdate=datetime.utcnow)
 
     def __repr__(self):
-        return f'<Posting: {self.amount} to {self.account} for {self.journal_entry}>'
+        return f'<{self.journal_entry} Post: {self.amount} to {self.account}>'
 
 
 class AssetType(db.Model):
