@@ -392,12 +392,31 @@ def delete_category(category_group_name, category_name):
           methods=['POST'])
 @login_required
 def change_category_group():
+    old_category_group = Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent.has(name='Budget')) \
+        .filter_by(name=request.form['old_category_group']).first()
+
+    old_expense_group = Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent.has(name='Budget Expenses')) \
+        .filter_by(name=request.form['old_category_group']).first()
+
     category = Account.query.filter_by(budget=g.budget) \
-        .filter(Account.parent.has(name=request.form['old_category_group'])) \
+        .filter(Account.parent == old_category_group) \
         .filter_by(name=request.form['category']).first()
+
+    expense = Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent == old_expense_group) \
+        .filter_by(name=request.form['category']).first()
+
     new_category_group = Account.query.filter_by(budget=g.budget) \
         .filter(Account.parent.has(name='Budget')) \
         .filter_by(name=request.form['new_category_group']).first()
+
+    new_expense_group = Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent.has(name='Budget Expenses')) \
+        .filter_by(name=request.form['new_category_group']).first()
+
     category.parent = new_category_group
+    expense.parent = new_expense_group
     db.session.commit()
     return jsonify(data={'message': 'success'})
