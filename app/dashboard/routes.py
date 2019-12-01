@@ -335,16 +335,28 @@ def add_category(category_group_name):
           '/edit_category/<category_name>', methods=['POST'])
 @login_required
 def edit_category(category_group_name, category_name):
-    form = EditCategoryForm(g.budget, category_group_name, category_name)
     category_group = Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent.has(Account.name == 'Budget')) \
         .filter_by(name=category_group_name).first()
+
+    expense_group = Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent.has(Account.name == 'Budget Expenses')) \
+        .filter_by(name=category_group_name).first()
+
     category = Account.query.filter_by(budget=g.budget) \
-        .filter(Account.parent.has(name=category_group_name)) \
+        .filter(Account.parent == category_group) \
         .filter_by(name=category_name).first()
+
+    expense = Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent == expense_group) \
+        .filter_by(name=category_name).first()
+
+    form = EditCategoryForm(g.budget, category_group_name, category_name)
     if form.validate_on_submit():
-        category.name = form.new_category.data
+        category.name = expense.name = form.new_category.data
         db.session.commit()
         return jsonify(data={'message': 'success'})
+
     form.new_category.label.text = category_name
     return render_template('dashboard/edit_category_form.html',
                            edit_category_form=form,
