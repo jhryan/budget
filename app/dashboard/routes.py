@@ -302,25 +302,30 @@ def delete_category_group(category_group_name):
 @login_required
 def add_category(category_group_name):
     category_group = Account.query.filter_by(budget=g.budget) \
-                     .filter_by(name=category_group_name).first()
+        .filter(Account.parent.has(Account.name == 'Budget')) \
+        .filter_by(name=category_group_name).first()
+
+    expense_group = Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent.has(Account.name == 'Budget Expenses')) \
+        .filter_by(name=category_group_name).first()
+
     form = AddCategoryForm(g.budget, category_group.name)
     if form.validate_on_submit():
-        category = Account.query.filter_by(budget=g.budget) \
-                   .filter(Account.parent == category_group) \
-                   .filter_by(name=form.category.data).first()
-        if category is not None:
-            form.category.errors.append(
-                    'This category name is already in use.')
-            return render_template('dashboard/add_category_form.html',
-                                   add_category_form=form,
-                                   category_group=category_group)
-        account = Account(name=form.category.data,
-                          type='Asset',
+        category = Account(name=form.category.data,
+                           type='Asset',
+                           budget=g.budget,
+                           parent=category_group)
+
+        expense = Account(name=form.category.data,
+                          type='Expense',
                           budget=g.budget,
-                          parent=category_group)
-        db.session.add(account)
+                          parent=expense_group)
+
+        db.session.add(category)
+        db.session.add(expense)
         db.session.commit()
         return jsonify(data={'message': 'success'})
+
     return render_template('dashboard/add_category_form.html',
                            add_category_form=form,
                            category_group=category_group)
