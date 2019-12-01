@@ -368,9 +368,22 @@ def edit_category(category_group_name, category_name):
           '/edit_category/<category_name>/delete', methods=['POST'])
 @login_required
 def delete_category(category_group_name, category_name):
+    category_group = Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent.has(Account.name == 'Budget')) \
+        .filter_by(name=category_group_name).first()
+
+    expense_group = Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent.has(Account.name == 'Budget Expenses')) \
+        .filter_by(name=category_group_name).first()
+
     Account.query.filter_by(budget=g.budget) \
-        .filter(Account.parent.has(name=category_group_name)) \
+        .filter(Account.parent == category_group) \
         .filter_by(name=category_name).delete(synchronize_session='fetch')
+
+    Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent == expense_group) \
+        .filter_by(name=category_name).delete(synchronize_session='fetch')
+
     db.session.commit()
     return jsonify(data={'message': 'success'})
 
