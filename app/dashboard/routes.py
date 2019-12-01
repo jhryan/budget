@@ -75,11 +75,11 @@ def before_request():
 
     accounts = Account.query.filter_by(budget=budget) \
         .filter(Account.name != 'Budget') \
-        .filter(~Account.parent.has(Account.name == 'Budget')) \
+        .filter(~Account.parent.has(name='Budget')) \
         .filter(~Account.parent.has(Account.name.in_(category_group_names))) \
         .filter(Account.name != 'Budget Equity') \
         .filter(Account.name != 'Budget Expenses') \
-        .filter(~Account.parent.has(Account.name == 'Budget Expenses')) \
+        .filter(~Account.parent.has(name='Budget Expenses')) \
         .filter(~Account.parent.has(Account.name.in_(expense_group_names))) \
         .all()
 
@@ -260,11 +260,11 @@ def add_category_group():
 @login_required
 def edit_category_group(category_group_name):
     category_group = Account.query.filter_by(budget=g.budget) \
-        .filter(Account.parent.has(Account.name == 'Budget')) \
+        .filter(Account.parent.has(name='Budget')) \
         .filter_by(name=category_group_name).first()
 
     expense_group = Account.query.filter_by(budget=g.budget) \
-        .filter(Account.parent.has(Account.name == 'Budget Expenses')) \
+        .filter(Account.parent.has(name='Budget Expenses')) \
         .filter_by(name=category_group_name).first()
 
     form = EditCategoryGroupForm(g.budget, category_group_name)
@@ -284,12 +284,12 @@ def edit_category_group(category_group_name):
 @login_required
 def delete_category_group(category_group_name):
     Account.query.filter_by(budget=g.budget) \
-        .filter(Account.parent.has(Account.name == 'Budget')) \
+        .filter(Account.parent.has(name='Budget')) \
         .filter_by(name=category_group_name) \
         .delete(synchronize_session='fetch')
 
     Account.query.filter_by(budget=g.budget) \
-        .filter(Account.parent.has(Account.name == 'Budget Expenses')) \
+        .filter(Account.parent.has(name='Budget Expenses')) \
         .filter_by(name=category_group_name) \
         .delete(synchronize_session='fetch')
 
@@ -302,11 +302,11 @@ def delete_category_group(category_group_name):
 @login_required
 def add_category(category_group_name):
     category_group = Account.query.filter_by(budget=g.budget) \
-        .filter(Account.parent.has(Account.name == 'Budget')) \
+        .filter(Account.parent.has(name='Budget')) \
         .filter_by(name=category_group_name).first()
 
     expense_group = Account.query.filter_by(budget=g.budget) \
-        .filter(Account.parent.has(Account.name == 'Budget Expenses')) \
+        .filter(Account.parent.has(name='Budget Expenses')) \
         .filter_by(name=category_group_name).first()
 
     form = AddCategoryForm(g.budget, category_group.name)
@@ -336,11 +336,11 @@ def add_category(category_group_name):
 @login_required
 def edit_category(category_group_name, category_name):
     category_group = Account.query.filter_by(budget=g.budget) \
-        .filter(Account.parent.has(Account.name == 'Budget')) \
+        .filter(Account.parent.has(name='Budget')) \
         .filter_by(name=category_group_name).first()
 
     expense_group = Account.query.filter_by(budget=g.budget) \
-        .filter(Account.parent.has(Account.name == 'Budget Expenses')) \
+        .filter(Account.parent.has(name='Budget Expenses')) \
         .filter_by(name=category_group_name).first()
 
     category = Account.query.filter_by(budget=g.budget) \
@@ -369,11 +369,11 @@ def edit_category(category_group_name, category_name):
 @login_required
 def delete_category(category_group_name, category_name):
     category_group = Account.query.filter_by(budget=g.budget) \
-        .filter(Account.parent.has(Account.name == 'Budget')) \
+        .filter(Account.parent.has(name='Budget')) \
         .filter_by(name=category_group_name).first()
 
     expense_group = Account.query.filter_by(budget=g.budget) \
-        .filter(Account.parent.has(Account.name == 'Budget Expenses')) \
+        .filter(Account.parent.has(name='Budget Expenses')) \
         .filter_by(name=category_group_name).first()
 
     Account.query.filter_by(budget=g.budget) \
