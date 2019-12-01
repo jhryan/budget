@@ -259,13 +259,20 @@ def add_category_group():
           '<category_group_name>', methods=['POST'])
 @login_required
 def edit_category_group(category_group_name):
-    form = EditCategoryGroupForm(g.budget, category_group_name)
     category_group = Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent.has(Account.name == 'Budget')) \
         .filter_by(name=category_group_name).first()
+
+    expense_group = Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent.has(Account.name == 'Budget Expenses')) \
+        .filter_by(name=category_group_name).first()
+
+    form = EditCategoryGroupForm(g.budget, category_group_name)
     if form.validate_on_submit():
-        category_group.name = form.new_category_group.data
+        category_group.name = expense_group.name = form.new_category_group.data
         db.session.commit()
         return jsonify(data={'message': 'success'})
+
     form.new_category_group.label.text = category_group_name
     return render_template('dashboard/edit_category_group_form.html',
                            edit_category_group_form=form,
