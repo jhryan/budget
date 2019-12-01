@@ -3,6 +3,8 @@ astroid==2.3.3
 autopep8==1.4.4
 blinker==1.4
 Click==7.0
+entrypoints==0.3
+flake8==3.7.9
 Flask==1.1.1
 Flask-Login==0.4.1
 Flask-Mail==0.9.1
@@ -20,6 +22,7 @@ mccabe==0.6.1
 pep8==1.7.1
 pkg-resources==0.0.0
 pycodestyle==2.5.0
+pyflakes==2.1.1
 PyJWT==1.7.1
 pylint==2.4.4
 pylint-flask==0.6
