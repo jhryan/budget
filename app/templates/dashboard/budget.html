@@ -402,8 +402,26 @@
                     'amount': amount
                     }
                 ).done(function (response) {
+                    // set budgeted field to category balance
                     input.val("$" + parseFloat(response.data.category_balance).toFixed(2));
+
+                    // set budgeted field for category's group to group balance
                     input.closest('tbody').find('.category-group-balance').text("$" + parseFloat(response.data.group_balance).toFixed(2));
+
+                    // set budget available field to category balance 
+                    available = input.closest('tbody').find('.budget-available')
+                    available.text("$" + parseFloat(response.data.category_balance).toFixed(2));
+
+                    // reset positive/negative setting based on category balance
+                    available.removeClass('positive');
+                    available.removeClass('negative');
+                    
+                    if (response.data.category_balance > 0) {
+                        available.addClass('positive');
+                    } else if (response.data.category_balance < 0) {
+                        available.addClass('negative');
+                    }
+
                 });
             });
         });
