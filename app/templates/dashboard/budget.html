@@ -94,6 +94,14 @@
             margin-left: -.25rem;
             padding-right: .5rem!important;
         }
+
+        table td .budget-available.positive {
+            background-color: #bbecbb;
+        }
+
+        table td .budget-available.negative {
+            background-color: #ecbbbb;
+        }
     </style>
 {% endblock %}
 
@@ -157,7 +165,13 @@
                                     <input type="text" value="{{ '$%.2f'|format(category.balance(month=month)) }}" class="px-1">
                                 </td>
                                 <td><span class="px-1">$0.00</span></td>
-                                <td><span class="budget-available px-1">$0.00</span></td>
+                                {% set budget_available_class = '' %}
+                                {% if category.balance(month=month) > 0 %}
+                                    {% set budget_available_class = 'positive' %}
+                                {% elif category.balance(month=month) < 0 %}
+                                    {% set budget_available_class = 'negative' %}
+                                {% endif %}
+                                <td><span class="px-1 budget-available {{ budget_available_class }}">{{ '$%.2f'|format(category.balance(month=month)) }}</span></td>
                             </tr>
                         {% endfor %}
                     </tbody>
