@@ -8,3 +8,5 @@ certs
 app.db
 budget.log*
 .env
+
+.vscode

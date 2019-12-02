@@ -1,6 +1,409 @@
 {% extends 'dashboard/base.html' %}
 {% set active_page = 'dashboard.budget' -%}
 
+{% block styles %}
+    {{ super() }}
+
+    <style>
+        .calendar a {
+            color: #17a2b8;
+        }
+
+        .calendar a:hover {
+            color: #22cee9;
+        }
+
+        .table .feather {
+            width: 20px;
+            height: 20px;
+            vertical-align: text-bottom;
+        }
+
+        .budget-toolbar {
+            font-size: .9rem;
+        }
+
+        .budget-toolbar .feather {
+            width: 16px;
+            height: 16px;
+            vertical-align: middle;
+        }
+
+        .budget-toolbar span:hover {
+            color: #212529;
+            cursor: pointer;
+        }
+
+        .category-group-name {
+            cursor: pointer;
+        }
+
+        .category-group-name .feather {
+            display: none;
+        }
+
+        th:hover .category-group-name .feather {
+            display: inline;
+        }
+
+        .category-group-name:hover .feather:hover {
+            color: #212529;
+        }
+
+        .category-name {
+            cursor: pointer;
+        }
+
+        .budget-details {
+            position: fixed;
+            width: 21%;
+            top: 101px;
+            bottom: 0;
+            right: 0;
+            padding: 0;
+            font-size: .875rem;
+            border-top: 1px solid rgb(222, 226, 230);
+        }
+
+        table td {
+            width: 25%;
+        }
+
+        table td input {
+            height: 100%;
+            width: 100%;
+            background: transparent;
+            border-color: transparent;
+            border-radius: .4rem;
+            margin: 0;
+            text-align: left;
+        }
+
+        table td:hover input,
+        table td input:focus {
+            outline: none;
+            border: .125rem solid #009cc2;
+            background-color: #fff;
+            color: #333;
+        }
+
+        table td .budget-available {
+            background-color: #e9ecef;
+            border-radius: .8rem;
+            padding-left: .5rem!important;
+            margin-left: -.25rem;
+            padding-right: .5rem!important;
+        }
+
+        table td .budget-available.positive {
+            background-color: #bbecbb;
+        }
+
+        table td .budget-available.negative {
+            background-color: #ecbbbb;
+        }
+    </style>
+{% endblock %}
+
 {% block dashboard_content %}
-    <h1>Budget Page</h1>
+    {% set month_url = month.strftime('%Y%m') %}
+    <header>
+        <div class="budget-header d-flex py-3 bg-dark text-light">
+            <div class="calendar d-flex justify-content-center align-items-center">
+                <a class="btn" href="{{ url_for('dashboard.budget_prev_month', month=month_url) }}">
+                    <span data-feather="arrow-left-circle"></span>
+                </a>
+                <span>
+                    {{ month.strftime('%b %Y') }}
+                </span>
+                <a class="btn" href="{{ url_for('dashboard.budget_next_month', month=month_url) }}">
+                    <span data-feather="arrow-right-circle"></span>
+                </a>
+            </div>
+        </div>
+        <div class="budget-toolbar text-muted p-1">
+            <span data-toggle="modal" data-target="#addCategoryGroupModal">
+                <span data-feather="plus-circle"></span>
+                Category Group
+            </span>
+        </div>
+    </header>
+
+    <section role="main" class="w-75">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th scope="col">Category</th>
+                    <th scope="col">Budgeted</th>
+                    <th scope="col">Activity</th>
+                    <th scope="col">Available</th>
+                </tr>
+            </thead>
+            {% if category_groups %}
+                {% for category_group in category_groups %}
+                    <tbody id="budget-category-{{ category_group.id }}" class="sortable">
+                        <tr class="thead-light nosort" data-id="category-group-{{ category_group.id }}">
+                            <th>
+                                <span class="expander" data-target=".budget-category-{{ category_group.id }}" data-toggle="collapse" aria-expanded="true">
+                                    <span data-feather="chevron-down"></span>
+                                </span>
+                                <span class="category-group-name">
+                                    <span data-toggle="modal" data-target="#editCategoryGroupModal"> {{ category_group.name }} </span>
+                                    <span data-toggle="modal" data-target="#addCategoryModal" data-feather="plus-circle"></span>
+                                </span>
+                            </th>
+                            <th>
+                                <span class="category-group-balance px-1">{{ '$%.2f'|format(category_group.balance(month=month)) }}</span>
+                            </th>
+                            <th><span class="px-1">$0.00</span></th>
+                            <th><span class="px-1">$0.00</span></th>
+                        </tr>
+                        {% for category in category_group.children %}
+                            <tr class="budget-category-{{ category_group.id }} collapse show" data-id="category-{{ category.id }}">
+                                <th class="category-name" scope="row" data-toggle="modal" data-target="#editCategoryModal"> {{ category.name }} </th>
+                                <td>
+                                    <input type="text" value="{{ '$%.2f'|format(category.balance(month=month)) }}" class="px-1">
+                                </td>
+                                <td><span class="px-1">$0.00</span></td>
+                                {% set budget_available_class = '' %}
+                                {% if category.balance(month=month) > 0 %}
+                                    {% set budget_available_class = 'positive' %}
+                                {% elif category.balance(month=month) < 0 %}
+                                    {% set budget_available_class = 'negative' %}
+                                {% endif %}
+                                <td><span class="px-1 budget-available {{ budget_available_class }}">{{ '$%.2f'|format(category.balance(month=month)) }}</span></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                {% endfor %}
+            {% endif %}
+        </table>
+    </section>
+    
+    <aside role="complementary" class="budget-details bg-light">
+        <div class="d-flex flex-column justify-content-end align-items-center py-3">
+            <h6 class="text-uppercase text-muted mb-1">Total Budgeted</h6>
+            <h2 class="mb-0">$0.00</h2>
+        </div>
+        <hr class="my-0 mx-5">
+    
+        <div class="d-flex flex-column justify-content-end align-items-center py-3">
+            <h6 class="text-uppercase text-muted mb-1">Total Activity</h6>
+            <h2 class="mb-0">$0.00</h2>
+        </div>
+        <hr class="my-0 mx-5">
+    
+        <div class="d-flex flex-column justify-content-end align-items-center py-3">
+            <h6 class="text-uppercase text-muted mb-1">Total Available</h6>
+            <h2 class="mb-0">$0.00</h2>
+        </div>
+        <hr class="my-0 mx-5">
+    
+        <div class="d-flex flex-column justify-content-end align-items-center py-3">
+            <h6 class="text-uppercase text-muted mb-1">Total Inflows</h6>
+            <h2 class="mb-0">$0.00</h2>
+        </div>
+        <hr class="my-0 mx-5">
+    </aside>
+
+    <!-- 'Add Category Group' modal  -->
+    <div class="modal fade" id="addCategoryGroupModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                {% include 'dashboard/add_category_group_form.html' %}
+            </div>
+        </div>
+    </div>
+        
+    <!-- 'Edit Category Group' modal  -->
+    <div class="modal fade" id="editCategoryGroupModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                {% include 'dashboard/edit_category_group_form.html' %}
+            </div>
+        </div>
+    </div>
+        
+    <!-- 'Add Category' modal  -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                {% include 'dashboard/add_category_form.html' %}
+            </div>
+        </div>
+    </div>
+        
+    <!-- 'Edit Category Group' modal  -->
+    <div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                {% include 'dashboard/edit_category_form.html' %}
+            </div>
+        </div>
+    </div>   
+{% endblock %}
+
+{% block scripts %}
+
+    {{ super() }}
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-sortablejs@latest/jquery-sortable.js"></script>
+
+    <script>
+        var edit_category_group_default_url;
+        var add_category_default_url;
+        var edit_category_default_url;
+
+        $(function () {
+
+            // create sortable table rows - whilst freezing/fixing certain rows in place
+            var pid, freezed;
+            var startElement;
+            $('.sortable').sortable({
+                animation: 150,
+                filter: ".nosort",
+                group: "category-group",
+                onStart: function () {
+                    startElement = this.el;
+                    freezed = this.el.querySelector('.nosort');
+                },
+                onMove: function (event) {  
+                    clearTimeout(pid);
+                    pid = setTimeout(function () {
+                        var list = event.to;
+                        
+                        if (list !== startElement)
+                        {
+                            list.insertBefore(list.querySelector('.nosort'), list.children[0]);
+                        } else if (list.firstElementChild === freezed) {
+                            list.insertBefore(freezed, list.children[0]);
+                        }
+                    }, 0);
+
+                    if (event.related.nextElementSibling === freezed) {
+                        return -1;
+                    }
+                    return freezed !== event.related;
+                },
+                onAdd: function(event) {
+                    var category = $(event.item).find('th').text().trim();
+                    var old_category_group = $(event.from).find('.category-group-name').text().trim();
+                    var new_category_group = $(event.to).find('.category-group-name').text().trim();
+
+                    $.post( "{{ url_for('dashboard.change_category_group') }}", {
+                        'category': category, 
+                        'old_category_group': old_category_group, 
+                        'new_category_group': new_category_group
+                        }
+                    );
+                }
+            });
+
+            $('#editCategoryGroupModal').on('show.bs.modal', function (event) {
+                var category_group = $(event.relatedTarget).text().trim();
+                var form = $(event.target).find('form:first');
+                edit_category_group_default_url = form.attr('action');
+                form.find('label[for="new_category_group"]').text(category_group);
+                form.attr('action', $(event.target).find('form:first').attr('action') + '/edit_category_group/' + category_group);
+            });
+
+            $('#editCategoryGroupModal').on('hide.bs.modal', function (event) {
+                $(event.target).find('form:first').attr('action', edit_category_group_default_url);
+            });
+
+            $('#editCategoryGroupModal .btn.btn-danger').on('click', function (event) {
+                var form = $(this).closest('form');
+
+                $.post(form.attr('action') + '/delete').done(function (data) {
+                    if (typeof data.data !== 'undefined' && data.data.message === 'success') {
+                        location.reload();
+                    }
+                });
+            });
+
+            $('#addCategoryModal').on('show.bs.modal', function (event) {
+                var category_group = $(event.relatedTarget).parent().text().trim();
+                var form = $(event.target).find('form:first');
+                add_category_default_url = form.attr('action');
+                form.attr('action', form.attr('action') + '/' + category_group + '/add_category');
+            });
+
+            $('#addCategoryModal').on('hide.bs.modal', function (event) {
+                $(event.target).find('form:first').attr('action', add_category_default_url);
+            });
+
+            $('#editCategoryModal').on('show.bs.modal', function (event) {
+                var category_group = $(event.relatedTarget).closest('tbody').find('.category-group-name span[data-target="#editCategoryGroupModal"]').text().trim();
+                var category = $(event.relatedTarget).text().trim();
+                var form = $(event.target).find('form:first');
+                edit_category_default_url = form.attr('action');
+                form.find('label[for="new_category"]').text(category);
+                form.attr('action', form.attr('action') + '/' + category_group + '/edit_category/' + category);
+            });
+
+            $('#editCategoryModal').on('hide.bs.modal', function (event) {
+                $(event.target).find('form:first').attr('action', edit_category_default_url);
+            });
+
+            $('#editCategoryModal .btn.btn-danger').on('click', function (event) {
+                var form = $(this).closest('form');
+
+                $.post(form.attr('action') + '/delete').done(function (data) {
+                    if (typeof data.data !== 'undefined' && data.data.message === 'success') {
+                        location.reload();
+                    }
+                });
+            });
+        });
+
+    </script>
+
+    <script>
+        $(function () {
+            $("table td input[type=text]").on("focus", function () {
+                $(this).val($(this).val().replace(/\$/g, ''));
+                $(this).select();
+            });
+
+            $("table td input[type=text]").on("keypress", function (event) {
+                if (event.which == 13) {
+                    $(this).blur();
+                }
+            });
+
+            $("table td input[type=text]").on("focusout", function () {
+                var input = $(this);
+                var amount = $(this).val();
+                var category = $(this).closest("[data-id^='category-']");
+
+                $.post("{{ url_for('dashboard.budget_amount', month=month.strftime('%Y%m')) }}", {
+                    'category_id': category.attr('data-id').replace(/category-/, ''),
+                    'amount': amount
+                    }
+                ).done(function (response) {
+                    // set budgeted field to category balance
+                    input.val("$" + parseFloat(response.data.category_balance).toFixed(2));
+
+                    // set budgeted field for category's group to group balance
+                    input.closest('tbody').find('.category-group-balance').text("$" + parseFloat(response.data.group_balance).toFixed(2));
+
+                    // set budget available field to category balance 
+                    available = input.closest('tbody').find('.budget-available')
+                    available.text("$" + parseFloat(response.data.category_balance).toFixed(2));
+
+                    // reset positive/negative setting based on category balance
+                    available.removeClass('positive');
+                    available.removeClass('negative');
+                    
+                    if (response.data.category_balance > 0) {
+                        available.addClass('positive');
+                    } else if (response.data.category_balance < 0) {
+                        available.addClass('negative');
+                    }
+
+                });
+            });
+        });
+    </script>
 {% endblock %}

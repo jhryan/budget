@@ -1,10 +1,20 @@
+:root {
+  --input-padding-x: .75rem;
+  --input-padding-y: .75rem;
+}
+
+.form-floating .form-control {
+  height: auto;
+}
+
 .form-label-group {
   position: relative;
   margin-bottom: 1rem;
 }
 
 .form-label-group > input,
-.form-label-group > label {
+.form-label-group > label,
+.form-label-group > select {
   padding: var(--input-padding-y) var(--input-padding-x);
 }
 

@@ -1,20 +1,24 @@
 {% extends "base.html" %}
 {% set active_page = active_page|default('dashboard.budget') -%}
+{% from '_formhelpers.html' import form_group %}
 
 {% block styles %}
     {{ super() }}
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/floating_labels.css') }}">
 {% endblock %}
 
 {% block navbar %}
 {# clear out upper navbar #}
 {% endblock %}
 
-{% block app_content %}
+{% block content %}
     <div class="container-fluid">
         <div class="row">
-            <nav class="col-md-2 d-none d-lg-block bg-light sidebar">
+
+            <!-- Sidebar -->
+            <nav class="col-lg-2 d-none d-lg-block bg-light sidebar">
                 <div class="sidebar-sticky">
                     <div class="dropdown">
                         <button class="btn btn-block rounded-0 dropdown-toggle d-flex justify-content-between align-items-center" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -59,7 +63,7 @@
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a href="#budget-accordion" class="nav-link expander" data-toggle="collapse" aria-expanded="true">
-                                <span data-feather="minus-circle"></span>
+                                <span data-feather="chevron-down"></span>
                                 Budget
                             </a>
                             <div class="collapse show" id="budget-accordion">
@@ -72,16 +76,29 @@
                         </li>
                     </ul>
                     <hr/>
-                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill mt-3 ml-3">
+                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill mt-3 ml-3" data-toggle="modal" data-target="#addAccountModal">
                         <span data-feather="plus-circle"></span>
                         Add Account
                     </button>
                 </div>
             </nav>
 
-            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <!-- Dashboard Content -->
+            <main role="main" class="col-lg-10 ml-sm-auto px-0">
+                {% include '_messages.html' %}
                 {% block dashboard_content %} {% endblock %}
             </main>
+
+            <!-- 'Add Account' modal  -->
+            <div class="modal fade" id="addAccountModal" tabindex="-1" role="dialog" aria-labelledby="addAccountModalTitle"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        {% include 'dashboard/add_account_form.html' %}
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 {% endblock %}
@@ -90,15 +107,55 @@
 
     {{ super () }}
 
+    <!-- change expander icon when expanding / collapsing -->
     <script>
-        $('.expander').click (function () {
-            if ( $(this).children('svg.feather.feather-minus-circle').length) {
-                $(this).children('svg.feather.feather-minus-circle').replaceWith(feather.icons['plus-circle'].toSvg());
-            }
-            else {
-                $(this).children('svg.feather.feather-plus-circle').replaceWith(feather.icons['minus-circle'].toSvg());
-            }
-        })
+        $(function () {
+            $('.expander').on('click', function (event) {
+                if (event.target != this) {
+                    $(this).trigger('click');
+                    return;
+                }
+
+                if ($(this).children('svg.feather.feather-chevron-down').length) {
+                    $(this).children('svg.feather.feather-chevron-down').replaceWith(feather.icons['chevron-right'].toSvg());
+                } else {
+                    $(this).children('svg.feather.feather-chevron-right').replaceWith(feather.icons['chevron-down'].toSvg());
+                }
+            });
+        });
     </script>
 
+    <!-- send modal forms via AJAX -->
+    <script>
+    function ajaxFormSubmission(event) {
+        event.preventDefault();
+        $.post($(this).attr('action'), $(this).serialize()).done(function (data) {
+            if (typeof data.data !== 'undefined' && data.data.message === 'success') {
+                $(event.target).closest('.modal').modal('toggle');
+                location.reload();
+            } else {
+                newForm = $(data);
+                $(event.target).replaceWith(newForm);
+                newForm.on('submit', ajaxFormSubmission);
+            }
+        });
+    }
+    
+    
+    $(function () {
+        $('.modal form').on('submit', ajaxFormSubmission);
+
+        $('.modal').on('hide.bs.modal', function (event) {
+            var form = $(event.target).find('form:first');
+            form.find(':input')
+                .not(':button, :submit, :reset, :hidden')
+                .val('')
+                .prop('checked', false)
+                .prop('selected', false);
+
+            form.find('.is-invalid').removeClass('is-invalid');
+            form.find('.invalid-feedback').remove();
+        });
+    });
+    </script>
 {% endblock %}
