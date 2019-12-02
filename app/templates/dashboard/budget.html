@@ -297,26 +297,6 @@
                         'new_category_group': new_category_group
                         }
                     );
-                },
-                store: {
-                    /**
-                     * Get the order of elements. Called once during initialization.
-                     * @param   {Sortable}  sortable
-                     * @returns {Array}
-                     */
-                    get: function (sortable) {
-                        var order = localStorage.getItem(sortable.el.id);
-                        return order ? order.split('|') : [];
-                    },
-
-                    /**
-                     * Save the order of elements. Called onEnd (when the item is dropped).
-                     * @param {Sortable}  sortable
-                     */
-                    set: function (sortable) {
-                        var order = sortable.toArray();
-                        localStorage.setItem(sortable.el.id, order.join('|'));
-                    }
                 }
             });
 
