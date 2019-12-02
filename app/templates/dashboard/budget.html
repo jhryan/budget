@@ -86,6 +86,14 @@
             background-color: #fff;
             color: #333;
         }
+
+        table td .budget-available {
+            background-color: #e9ecef;
+            border-radius: .8rem;
+            padding-left: .5rem!important;
+            margin-left: -.25rem;
+            padding-right: .5rem!important;
+        }
     </style>
 {% endblock %}
 
@@ -149,7 +157,7 @@
                                     <input type="text" value="{{ '$%.2f'|format(category.balance(month=month)) }}" class="px-1">
                                 </td>
                                 <td><span class="px-1">$0.00</span></td>
-                                <td><span class="px-1">$0.00</span></td>
+                                <td><span class="budget-available px-1">$0.00</span></td>
                             </tr>
                         {% endfor %}
                     </tbody>
