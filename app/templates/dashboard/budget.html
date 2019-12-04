@@ -87,7 +87,7 @@
             color: #333;
         }
 
-        table td .budget-available {
+        table td .category-available {
             background-color: #e9ecef;
             border-radius: .8rem;
             padding-left: .5rem!important;
@@ -95,11 +95,11 @@
             padding-right: .5rem!important;
         }
 
-        table td .budget-available.positive {
+        table td .category-available.positive {
             background-color: #bbecbb;
         }
 
-        table td .budget-available.negative {
+        table td .category-available.negative {
             background-color: #ecbbbb;
         }
     </style>
@@ -153,25 +153,55 @@
                                 </span>
                             </th>
                             <th>
-                                <span class="category-group-balance px-1">{{ '$%.2f'|format(category_group.balance(month=month)) }}</span>
+                                {% for account in category_group.budget.accounts %}
+                                    {% if account.parent.name == 'Budget Expenses' and account.name == category_group.name and account.type == 'Expense' %}
+                                        <span class="category-group-budgeted px-1">{{ '$%.2f'|format(category_group.balance(month=month) + account.balance(month=month)) }}</span>
+                                    {% endif %}
+                                {% endfor %}
                             </th>
-                            <th><span class="px-1">$0.00</span></th>
-                            <th><span class="px-1">$0.00</span></th>
+                            <th>
+                                {% for account in category_group.budget.accounts %}
+                                    {% if account.parent.name == 'Budget Expenses' and account.name == category_group.name and account.type == 'Expense' %}
+                                        {% if account.balance(month=month) > 0 %}
+                                            <span class="category-activity px-1">{{ '-$%.2f'|format(account.balance(month=month)) }}</span>
+                                        {% else %}
+                                            <span class="category-activity px-1">{{ '$%.2f'|format(account.balance(month=month)) }}</span>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </th>
+                            <th>
+                                <span class="category-group-available px-1">{{ '$%.2f'|format(category_group.balance(month=month)) }}</span>
+                            </th>
                         </tr>
                         {% for category in category_group.children %}
                             <tr class="budget-category-{{ category_group.id }} collapse show" data-id="category-{{ category.id }}">
                                 <th class="category-name" scope="row" data-toggle="modal" data-target="#editCategoryModal"> {{ category.name }} </th>
                                 <td>
-                                    <input type="text" value="{{ '$%.2f'|format(category.balance(month=month)) }}" class="px-1">
+                                    {% for account in category.budget.accounts %}
+                                        {% if account.parent.name == category_group.name and account.name == category.name and account.type == 'Expense' %}
+                                            <input type="text" value="{{ '$%.2f'|format(category.balance(month=month) + account.balance(month=month)) }}" class="category-budgeted px-1">
+                                        {% endif %}
+                                    {% endfor %}
                                 </td>
-                                <td><span class="px-1">$0.00</span></td>
-                                {% set budget_available_class = '' %}
+                                <td>
+                                    {% for account in category.budget.accounts %}
+                                        {% if account.parent.name == category_group.name and account.name == category.name and account.type == 'Expense' %}
+                                            {% if account.balance(month=month) > 0 %}
+                                                <span class="category-activity px-1">{{ '-$%.2f'|format(account.balance(month=month)) }}</span>
+                                            {% else %}
+                                                <span class="category-activity px-1">{{ '$%.2f'|format(account.balance(month=month)) }}</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                                {% set category_available_sign = '' %}
                                 {% if category.balance(month=month) > 0 %}
-                                    {% set budget_available_class = 'positive' %}
+                                    {% set category_available_sign = 'positive' %}
                                 {% elif category.balance(month=month) < 0 %}
-                                    {% set budget_available_class = 'negative' %}
+                                    {% set category_available_sign = 'negative' %}
                                 {% endif %}
-                                <td><span class="px-1 budget-available {{ budget_available_class }}">{{ '$%.2f'|format(category.balance(month=month)) }}</span></td>
+                                <td><span class="px-1 category-available {{ category_available_sign }}">{{ '$%.2f'|format(category.balance(month=month)) }}</span></td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -382,26 +412,28 @@
                     'amount': amount
                     }
                 ).done(function (response) {
-                    // set budgeted field to category balance
-                    input.val("$" + parseFloat(response.data.category_balance).toFixed(2));
+                    // set category budgeted field to category_budgeted
+                    input.val("$" + parseFloat(response.data.category_budgeted).toFixed(2));
 
-                    // set budgeted field for category's group to group balance
-                    input.closest('tbody').find('.category-group-balance').text("$" + parseFloat(response.data.group_balance).toFixed(2));
+                    // set category group budgeted field for category's group to group_budgeted
+                    input.closest('tbody').find('.category-group-budgeted').text("$" + parseFloat(response.data.group_budgeted).toFixed(2));
 
-                    // set budget available field to category balance 
-                    available = input.closest('tbody').find('.budget-available')
-                    available.text("$" + parseFloat(response.data.category_balance).toFixed(2));
+                    // set category available field to category_available 
+                    available = input.closest('tbody').find('.category-available')
+                    available.text("$" + parseFloat(response.data.category_available).toFixed(2));
 
                     // reset positive/negative setting based on category balance
                     available.removeClass('positive');
                     available.removeClass('negative');
                     
-                    if (response.data.category_balance > 0) {
+                    if (response.data.category_available> 0) {
                         available.addClass('positive');
-                    } else if (response.data.category_balance < 0) {
+                    } else if (response.data.category_available< 0) {
                         available.addClass('negative');
                     }
 
+                    // set category group available field for category's group to group_available
+                    input.closest('tbody').find('.category-group-available').text("$" + parseFloat(response.data.group_available).toFixed(2));
                 });
             });
         });

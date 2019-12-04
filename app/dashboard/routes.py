@@ -145,9 +145,20 @@ def budget_amount(month):
     budget_equity = Account.query.filter_by(budget=g.budget) \
         .filter_by(type='Equity').filter_by(name='Budget Equity').first()
 
-    if amount != category.balance(month=month):
+    expense_group = Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent.has(name='Budget Expenses')) \
+        .filter_by(name=category.parent.name).first()
+
+    expense = Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent == expense_group) \
+        .filter_by(name=category.name).first()
+
+    category_available = category.balance(month=month)
+    category_budgeted = category_available + expense.balance(month=month)
+
+    if amount != category_budgeted:
         # only submit posting for the difference in budgeted amount
-        amount -= category.balance(month=month)
+        amount -= category_budgeted
 
         journal_entry = Journal(date=month)
 
@@ -167,9 +178,17 @@ def budget_amount(month):
 
         db.session.commit()
 
+    category_available = category.balance(month=month)
+    category_budgeted = category_available + expense.balance(month=month)
+    group_available = category.parent.balance(month=month)
+    group_budgeted = group_available + expense_group.balance(month=month)
+
     return jsonify(data={
-            'category_balance': str(category.balance(month=month)),
-            'group_balance': str(category.parent.balance(month=month))})
+            'category_available': str(category_available),
+            'category_budgeted': str(category_budgeted),
+            'group_available': str(group_available),
+            'group_budgeted': str(group_budgeted)
+            })
 
 
 @bp.route('/<username>/budget/<int:budget_id>/reports')
