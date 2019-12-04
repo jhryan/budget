@@ -99,9 +99,21 @@ def budget(month):
     category_groups = Account.query.filter_by(budget=g.budget) \
         .filter(Account.parent.has(name='Budget')) \
         .filter(Account.name != 'Unbudgeted').all()
+
+    expense_groups = Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent.has(name='Budget Expenses')) \
+        .filter(Account.name != 'Unbudgeted').all()
+
+    month = datetime.strptime(month, '%Y%m')
+    total_available = sum(group.balance(month=month)
+                          for group in category_groups)
+    total_activity = sum(group.balance(month=month)
+                         for group in expense_groups)
+    total_budgeted = total_available + total_activity
+
     return render_template('dashboard/budget.html',
                            title='Dashboard',
-                           month=datetime.strptime(month, '%Y%m'),
+                           month=month,
                            add_account_form=AddAccountForm(g.budget),
                            category_group_form=AddCategoryGroupForm(g.budget),
                            edit_category_group_form=EditCategoryGroupForm(
@@ -110,7 +122,10 @@ def budget(month):
                            edit_category_form=EditCategoryForm(
                                     g.budget, '', ''),
                            user=g.user, budget=g.budget, accounts=g.accounts,
-                           category_groups=category_groups)
+                           category_groups=category_groups,
+                           total_budgeted=total_budgeted,
+                           total_activity=total_activity,
+                           total_available=total_available)
 
 
 @bp.route('/<username>/budget/<int:budget_id>/<month>/prev_month')

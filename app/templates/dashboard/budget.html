@@ -213,19 +213,25 @@
     <aside role="complementary" class="budget-details bg-light">
         <div class="d-flex flex-column justify-content-end align-items-center py-3">
             <h6 class="text-uppercase text-muted mb-1">Total Budgeted</h6>
-            <h2 class="mb-0">$0.00</h2>
+            <h2 class="mb-0">{{ '$%.2f'|format(total_budgeted) }}</h2>
         </div>
         <hr class="my-0 mx-5">
     
         <div class="d-flex flex-column justify-content-end align-items-center py-3">
             <h6 class="text-uppercase text-muted mb-1">Total Activity</h6>
-            <h2 class="mb-0">$0.00</h2>
+            <h2 class="mb-0">
+                {% if total_activity > 0 %}
+                    {{ '-$%.2f'|format(total_activity) }}
+                {% else %}
+                    {{ '$%.2f'|format(total_activity) }}
+                {% endif %}
+            </h2>
         </div>
         <hr class="my-0 mx-5">
     
         <div class="d-flex flex-column justify-content-end align-items-center py-3">
             <h6 class="text-uppercase text-muted mb-1">Total Available</h6>
-            <h2 class="mb-0">$0.00</h2>
+            <h2 class="mb-0">{{ '$%.2f'|format(total_available) }}</h2>
         </div>
         <hr class="my-0 mx-5">
     
