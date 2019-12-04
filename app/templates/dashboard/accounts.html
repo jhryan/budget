@@ -33,6 +33,10 @@
             color: #212529;
             cursor: pointer;
         }
+
+        table thead tr th {
+            border-right: 1px solid #dee2e6;
+        }
     </style>
 {% endblock %}
 
@@ -55,6 +59,51 @@
                 </span>
             </div>
         </header>
+
+        <section role="main">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">Date</th>
+                        <th scope="col">Payee</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Memo</th>
+                        <th scope="col">Outflow</th>
+                        <th scope="col">Inflow</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% if account.postings %}
+                {% for posting in account.postings %}
+                    <tr>
+                        <td>{{ moment(posting.journal_entry.date, local=True).format('M/DD/YYYY') }}</td>
+                        <td>{{ posting.journal_entry.payee }}</td>
+                        <td>
+                            {% for journal_entry_posting in posting.journal_entry.postings %}
+                                {% if journal_entry_posting.amount == -posting.amount %}
+                                    {{ journal_entry_posting.account.name }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {{ posting.journal_entry.description }}
+                        </td>
+                        <td class="text-right">
+                            {% if posting.amount < 0 %}
+                                {{ '$%.2f'|format(-posting.amount) }}
+                            {% endif %}
+                        </td>
+                        <td class="text-right">
+                            {% if posting.amount > 0 %}
+                                {{ '$%.2f'|format(posting.amount) }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+                {% endif %}
+            </table>
+        </section>
     {% else %}
         <h1>Accounts Page</h1>
     {% endif %}
