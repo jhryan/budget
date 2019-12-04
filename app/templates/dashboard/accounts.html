@@ -6,9 +6,55 @@
     {% set active_page = 'dashboard.accounts' -%}
 {% endif %}
 
+{% block styles %}
+    {{ super() }}
+
+    <style>
+        header p {
+            font-size: 0.75rem;
+        }
+
+        header p.positive {
+            font-size: 1rem;
+            color: #5bbd78;
+        }
+
+        .account-toolbar {
+            font-size: .9rem;
+        }
+
+        .account-toolbar .feather {
+            width: 16px;
+            height: 16px;
+            vertical-align: middle;
+        }
+
+        .account-toolbar span:hover {
+            color: #212529;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+
 {% block dashboard_content %}
     {% if account is not none %}
-        <h1>{{ account.name }} Page</h1>
+        <header>
+            <div class="budget-header d-flex py-3 bg-dark text-light">
+                <span class="badge badge-pill badge-success ml-3 d-inline-flex align-items-center justify-content-center">
+                    {{ account.name }}
+                </span>
+                <div class="d-flex flex-column justify-content-center align-items-center ml-3">
+                    <p class="mb-0 font-italic">Working Balance</p>
+                    <p class="mb-0 font-weight-bold positive">$0.00</p>
+                </div>
+            </div>
+            <div class="account-toolbar text-muted p-1">
+                <span data-toggle="modal" data-target="#addTransactionModal">
+                    <span data-feather="plus-circle"></span>
+                    Add Transaction
+                </span>
+            </div>
+        </header>
     {% else %}
         <h1>Accounts Page</h1>
     {% endif %}
