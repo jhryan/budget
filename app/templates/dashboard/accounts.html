@@ -34,9 +34,26 @@
             cursor: pointer;
         }
 
+        table {
+            cursor: pointer;
+        }
+
         table thead tr th {
             border-right: 1px solid #dee2e6;
         }
+
+        .custom-control-label {
+            vertical-align: top;
+        }
+
+        .checkbox {
+            width: 0.5rem;
+        }
+
+        tr.active {
+            background-color:#6c757d;
+            color: #fff;
+        }   
     </style>
 {% endblock %}
 
@@ -64,6 +81,12 @@
             <table class="table table-sm">
                 <thead>
                     <tr>
+                        <th class="checkbox" scope="col">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input">
+                                <label class="custom-control-label"></label>
+                            </div>
+                        </th>
                         <th scope="col">Date</th>
                         <th scope="col">Payee</th>
                         <th scope="col">Category</th>
@@ -76,6 +99,12 @@
                 {% if account.postings %}
                 {% for posting in account.postings %}
                     <tr>
+                        <td>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input">
+                                <label class="custom-control-label"></label>
+                            </div>
+                        </td>
                         <td>{{ moment(posting.journal_entry.date, local=True).format('M/DD/YYYY') }}</td>
                         <td>{{ posting.journal_entry.payee }}</td>
                         <td>
@@ -107,4 +136,45 @@
     {% else %}
         <h1>Accounts Page</h1>
     {% endif %}
+{% endblock %}
+
+{% block scripts %}
+
+    {{ super() }}
+
+    <script>
+        $(function () {
+            $('tbody tr').on('click', function(event) {
+                if (!$(this).hasClass('active')) {
+                    $(this).addClass('active');
+                    $(this).find('input[type="checkbox"]').attr("checked", true);
+                }
+            });
+
+            $('tbody tr .custom-checkbox label').on('click', function (event) {
+                var row = $(this).closest('tbody tr');
+
+                if (row.hasClass('active')) {
+                    row.removeClass('active');
+                    row.find('input[type="checkbox"]').attr("checked", false);
+                    event.stopPropagation();
+                }
+            });
+
+            $('thead tr .custom-checkbox label').on('click', function (event) {
+                var table = $(this).closest('table');
+                var row = $(this).closest('thead tr');
+                var checkbox =  row.find('input[type="checkbox"]');
+
+                if (checkbox.attr("checked")) {
+                    table.find('tbody tr').removeClass('active');
+                    table.find('.custom-checkbox input[type="checkbox"]').attr("checked", false);
+                } else {
+                    table.find('tbody tr').addClass('active');
+                    table.find('.custom-checkbox input[type="checkbox"]').attr("checked", true);
+                }
+            });
+        })
+    </script>
+
 {% endblock %}
