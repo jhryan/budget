@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from wtforms import DateField
 from wtforms import DecimalField
 from wtforms import SelectField
 from wtforms import StringField
@@ -112,3 +113,14 @@ class EditCategoryForm(FlaskForm):
             if account is not None:
                 raise ValidationError(
                         'There is already a category with this name.')
+
+
+class EditTransactionForm(FlaskForm):
+    date = DateField('Date', validators=[DataRequired()])
+    payee = StringField('Payee')
+    category = SelectField('Category', validators=[DataRequired()])
+    memo = StringField('Memo')
+    outflow = DecimalField('Outflow', places=2)
+    inflow = DecimalField('Inflow', places=2)
+
+    submit = SubmitField('Save')

@@ -54,6 +54,30 @@
             background-color:#6c757d;
             color: #fff;
         }   
+
+        td.transaction-date {
+            width: 10%;
+        }
+
+        td.transaction-payee {
+            width: 15%;
+        }
+
+        td.transaction-category {
+            width: 25%;
+        }
+
+        td.transaction-description {
+            width: 25%;
+        }
+
+        td.transaction-outflow {
+            width: 12.5%;
+        }
+
+        td.transaction-inflow {
+            width: 12.5%;
+        }
     </style>
 {% endblock %}
 
@@ -105,32 +129,32 @@
                                 <label class="custom-control-label"></label>
                             </div>
                         </td>
-                        <td>{{ moment(posting.journal_entry.date, local=True).format('M/DD/YYYY') }}</td>
-                        <td>{{ posting.journal_entry.payee }}</td>
-                        <td>
+                        <td class="transaction-date">{{ moment(posting.journal_entry.date, local=True).format('M/DD/YYYY') }}</td>
+                        <td class="transaction-payee">{{ posting.journal_entry.payee }}</td>
+                        <td class="transaction-category">
                             {% for journal_entry_posting in posting.journal_entry.postings %}
                                 {% if journal_entry_posting.amount == -posting.amount %}
                                     {{ journal_entry_posting.account.name }}
                                 {% endif %}
                             {% endfor %}
                         </td>
-                        <td>
+                        <td class="transaction-description">
                             {{ posting.journal_entry.description }}
                         </td>
-                        <td class="text-right">
+                        <td class="text-right transaction-outflow">
                             {% if posting.amount < 0 %}
                                 {{ '$%.2f'|format(-posting.amount) }}
                             {% endif %}
                         </td>
-                        <td class="text-right">
+                        <td class="text-right transaction-inflow">
                             {% if posting.amount > 0 %}
                                 {{ '$%.2f'|format(posting.amount) }}
                             {% endif %}
                         </td>
                     </tr>
-                </tbody>
                 {% endfor %}
                 {% endif %}
+                </tbody>
             </table>
         </section>
     {% else %}
@@ -145,16 +169,41 @@
     <script>
         $(function () {
             $('tbody tr').on('click', function(event) {
-                if (!$(this).hasClass('active')) {
+                if (!$(this).hasClass('active') && !$(this).hasClass('editing')) {
                     $(this).addClass('active');
                     $(this).find('input[type="checkbox"]').attr("checked", true);
+                } else if ($(this).hasClass('active') && !$(this).hasClass('editing')) {
+                    $(this).addClass('editing');
+                    var header_checkbox = $(this).closest('table').find('thead tr .custom-checkbox input[type="checkbox"]');
+                    header_checkbox.prop('indeterminate', true);
+                    
+                    var date = $(this).find('.transaction-date');
+                    var timestamp = date.find('span').attr('data-timestamp').slice(0, 10);
+                    date.html('<input type="date" class="form-control form-control-sm" placeholder="Date" value=' + timestamp + ' required>');
+
+                    var payee = $(this).find('.transaction-payee');
+                    payee.html('<input type="text" class="form-control form-control-sm" placeholder="Payee" value=' + payee.text() + '>'); 
+
+                    var category = $(this).find('.transaction-category');
+                    category.html('<input type="text" class="form-control form-control-sm" placeholder="Category" value=' + category.text() + '>');
+
+                    var description = $(this).find('.transaction-description');
+                    description.html('<input type="text" class="form-control form-control-sm" placeholder="memo" value=' + description.text() + '>');
+
+                    var outflow = $(this).find('.transaction-outflow');
+                    outflow.html('<input type="text" class="form-control form-control-sm" placeholder="" value=' + outflow.text() + '>');
+
+                    var inflow = $(this).find('.transaction-inflow');
+                    inflow.html('<input type="text" class="form-control form-control-sm" placeholder="" value=' + inflow.text() + '>');
                 }
             });
 
             $('tbody tr .custom-checkbox label').on('click', function (event) {
                 var row = $(this).closest('tbody tr');
 
-                if (row.hasClass('active')) {
+                if (row.hasClass('editing')) {
+                    return;
+                } else if (row.hasClass('active')) {
                     row.removeClass('active');
                     row.find('input[type="checkbox"]').attr("checked", false);
                     event.stopPropagation();
@@ -166,7 +215,9 @@
                 var row = $(this).closest('thead tr');
                 var checkbox =  row.find('input[type="checkbox"]');
 
-                if (checkbox.attr("checked")) {
+                if (table.find('tbody tr.editing').length){
+                    return;
+                } else if (checkbox.attr("checked")) {
                     table.find('tbody tr').removeClass('active');
                     table.find('.custom-checkbox input[type="checkbox"]').attr("checked", false);
                 } else {

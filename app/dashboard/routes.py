@@ -21,6 +21,7 @@ from app.dashboard.forms import AddCategoryForm
 from app.dashboard.forms import AddCategoryGroupForm
 from app.dashboard.forms import EditCategoryForm
 from app.dashboard.forms import EditCategoryGroupForm
+from app.dashboard.forms import EditTransactionForm
 from app.models import Account
 from app.models import AssetType
 from app.models import Budget
@@ -230,6 +231,7 @@ def accounts(account_id):
     return render_template('dashboard/accounts.html',
                            title='Dashboard',
                            add_account_form=AddAccountForm(g.budget),
+                           edit_transaction_form=EditTransactionForm(),
                            user=g.user,
                            budget=g.budget,
                            accounts=g.accounts,
