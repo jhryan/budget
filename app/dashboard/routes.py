@@ -259,6 +259,21 @@ def add_account():
                            add_account_form=form)
 
 
+@bp.route('/<username>/budget/<int:budget_id>/accounts/<int:account_id>/'
+          'edit_transaction', methods=['POST'])
+@login_required
+def edit_transaction(account_id):
+    account = None
+    if account_id is not None:
+        account = Account.query.filter_by(id=account_id).first()
+        if account is None or account.budget.user != current_user:
+            abort(401)
+    
+    #todo
+
+    return redirect(url_for('dashboard.accounts', account_id=account_id))
+
+
 @bp.route('/<username>/budget/<int:budget_id>/add_category_group',
           methods=['POST'])
 @login_required

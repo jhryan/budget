@@ -102,60 +102,64 @@
         </header>
 
         <section role="main">
-            <table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th class="checkbox" scope="col">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input">
-                                <label class="custom-control-label"></label>
-                            </div>
-                        </th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Payee</th>
-                        <th scope="col">Category</th>
-                        <th scope="col">Memo</th>
-                        <th scope="col">Outflow</th>
-                        <th scope="col">Inflow</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% if account.postings %}
-                {% for posting in account.postings %}
-                    <tr>
-                        <td>
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input">
-                                <label class="custom-control-label"></label>
-                            </div>
-                        </td>
-                        <td class="transaction-date">{{ moment(posting.journal_entry.date, local=True).format('M/DD/YYYY') }}</td>
-                        <td class="transaction-payee">{{ posting.journal_entry.payee }}</td>
-                        <td class="transaction-category">
-                            {% for journal_entry_posting in posting.journal_entry.postings %}
-                                {% if journal_entry_posting.amount == -posting.amount %}
-                                    {{ journal_entry_posting.account.name }}
+            <form method="post" action="{{ url_for('dashboard.edit_transaction', account_id=account.id) }}" novalidate>
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th class="checkbox" scope="col">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input">
+                                    <label class="custom-control-label"></label>
+                                </div>
+                            </th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Payee</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Memo</th>
+                            <th scope="col">Outflow</th>
+                            <th scope="col">Inflow</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if account.postings %}
+                    {% for posting in account.postings %}
+                        <tr id="transaction-{{ posting.id }}">
+                            <td>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input">
+                                    <label class="custom-control-label"></label>
+                                </div>
+                            </td>
+                            <td class="transaction-date">{{ moment(posting.journal_entry.date, local=True).format('M/DD/YYYY') }}</td>
+                            <td class="transaction-payee">{{ posting.journal_entry.payee }}</td>
+                            <td class="transaction-category">
+                                {% for journal_entry_posting in posting.journal_entry.postings %}
+                                    {% if journal_entry_posting.amount == -posting.amount %}
+                                        {{ journal_entry_posting.account.name }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td class="transaction-description">
+                                {{ posting.journal_entry.description }}
+                            </td>
+                            <td class="text-right transaction-outflow">
+                                {% if posting.amount < 0 %}
+                                    {{ '$%.2f'|format(-posting.amount) }}
                                 {% endif %}
-                            {% endfor %}
-                        </td>
-                        <td class="transaction-description">
-                            {{ posting.journal_entry.description }}
-                        </td>
-                        <td class="text-right transaction-outflow">
-                            {% if posting.amount < 0 %}
-                                {{ '$%.2f'|format(-posting.amount) }}
-                            {% endif %}
-                        </td>
-                        <td class="text-right transaction-inflow">
-                            {% if posting.amount > 0 %}
-                                {{ '$%.2f'|format(posting.amount) }}
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-                {% endif %}
-                </tbody>
-            </table>
+                            </td>
+                            <td class="text-right transaction-inflow">
+                                <div>
+                                    {% if posting.amount > 0 %}
+                                        {{ '$%.2f'|format(posting.amount) }}
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            </form>
         </section>
     {% else %}
         <h1>Accounts Page</h1>
@@ -176,13 +180,13 @@
                     $(this).addClass('editing');
                     var header_checkbox = $(this).closest('table').find('thead tr .custom-checkbox input[type="checkbox"]');
                     header_checkbox.prop('indeterminate', true);
-                    
+
                     var date = $(this).find('.transaction-date');
                     var timestamp = date.find('span').attr('data-timestamp').slice(0, 10);
                     date.html('<input type="date" class="form-control form-control-sm" placeholder="Date" value=' + timestamp + ' required>');
 
                     var payee = $(this).find('.transaction-payee');
-                    payee.html('<input type="text" class="form-control form-control-sm" placeholder="Payee" value=' + payee.text() + '>'); 
+                    payee.html('<input type="text" class="form-control form-control-sm" placeholder="Payee" value=' + payee.text() + '>');
 
                     var category = $(this).find('.transaction-category');
                     category.html('<input type="text" class="form-control form-control-sm" placeholder="Category" value=' + category.text() + '>');
@@ -194,7 +198,13 @@
                     outflow.html('<input type="text" class="form-control form-control-sm" placeholder="" value=' + outflow.text() + '>');
 
                     var inflow = $(this).find('.transaction-inflow');
-                    inflow.html('<input type="text" class="form-control form-control-sm" placeholder="" value=' + inflow.text() + '>');
+                    inflow.html('<div><input type="text" class="form-control form-control-sm" placeholder="" value=' + inflow.text() + '></div>');
+
+                    
+                    inflow.find('div').after('<div class="mt-2">' +
+                                                '<input type="hidden" id="postingId" value="' + $(this).attr('id').replace(/transaction-/, '') + '"' +
+                                                '<button type="button" class="btn btn-primary mr-1" onClick="window.location.reload();">Cancel</button>' +
+                                                '<input class="btn btn-primary ml-1" id="submit" type="submit" value="Save"></div>');
                 }
             });
 
