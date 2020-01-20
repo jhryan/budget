@@ -103,6 +103,7 @@
 
         <section role="main">
             <form method="post" action="{{ url_for('dashboard.edit_transaction', account_id=account.id) }}" novalidate>
+                {{ edit_transaction_form.hidden_tag() }}
                 <table class="table table-sm">
                     <thead>
                         <tr>
@@ -183,26 +184,28 @@
 
                     var date = $(this).find('.transaction-date');
                     var timestamp = date.find('span').attr('data-timestamp').slice(0, 10);
-                    date.html('<input type="date" class="form-control form-control-sm" placeholder="Date" value=' + timestamp + ' required>');
+                    date.html('<input id="date" name="date" type="date" class="form-control form-control-sm" placeholder="Date" value=' + timestamp + ' required>');
 
                     var payee = $(this).find('.transaction-payee');
-                    payee.html('<input type="text" class="form-control form-control-sm" placeholder="Payee" value=' + payee.text() + '>');
+                    payee.html('<input id="payee" name="payee" type="text" class="form-control form-control-sm" placeholder="Payee" value=' + payee.text() + '>');
 
                     var category = $(this).find('.transaction-category');
-                    category.html('<input type="text" class="form-control form-control-sm" placeholder="Category" value=' + category.text() + '>');
+                    category.html('<select id="category" name="category"  class="form-control form-control-sm">' + 
+                                        '<option value="' + category.text().trim() + '">' + category.text().trim() + '</option>'+
+                                   '</select>');
 
                     var description = $(this).find('.transaction-description');
-                    description.html('<input type="text" class="form-control form-control-sm" placeholder="memo" value=' + description.text() + '>');
+                    description.html('<input id="description" name="description" type="text" class="form-control form-control-sm" placeholder="memo" value=' + description.text() + '>');
 
                     var outflow = $(this).find('.transaction-outflow');
-                    outflow.html('<input type="text" class="form-control form-control-sm" placeholder="" value=' + outflow.text() + '>');
+                    outflow.html('<input id="outflow" name="outflow" type="text" class="form-control form-control-sm" placeholder="" value=' + outflow.text() + '>');
 
                     var inflow = $(this).find('.transaction-inflow');
-                    inflow.html('<div><input type="text" class="form-control form-control-sm" placeholder="" value=' + inflow.text() + '></div>');
+                    inflow.html('<div><input id="inflow" name="inflow" type="text" class="form-control form-control-sm" placeholder="" value=' + inflow.text() + '></div>');
 
                     
                     inflow.find('div').after('<div class="mt-2">' +
-                                                '<input type="hidden" id="postingId" value="' + $(this).attr('id').replace(/transaction-/, '') + '"' +
+                                                '<input type="hidden" id="posting_id" name="posting_id" value="' + $(this).attr('id').replace(/transaction-/, '') + '">' +
                                                 '<button type="button" class="btn btn-primary mr-1" onClick="window.location.reload();">Cancel</button>' +
                                                 '<input class="btn btn-primary ml-1" id="submit" type="submit" value="Save"></div>');
                 }

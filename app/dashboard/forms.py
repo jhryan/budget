@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import DateField
 from wtforms import DecimalField
+from wtforms import IntegerField
 from wtforms import SelectField
 from wtforms import StringField
 from wtforms import SubmitField
@@ -118,9 +119,13 @@ class EditCategoryForm(FlaskForm):
 class EditTransactionForm(FlaskForm):
     date = DateField('Date', validators=[DataRequired()])
     payee = StringField('Payee')
-    category = SelectField('Category', validators=[DataRequired()])
-    memo = StringField('Memo')
+    category = SelectField('Category',
+                           choices=[('', 'Category')],
+                           validators=[DataRequired()])
+    description = StringField('Memo')
     outflow = DecimalField('Outflow', places=2)
     inflow = DecimalField('Inflow', places=2)
 
+    posting_id = IntegerField()
+ 
     submit = SubmitField('Save')
