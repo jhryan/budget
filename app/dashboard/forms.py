@@ -127,5 +127,5 @@ class EditTransactionForm(FlaskForm):
     inflow = DecimalField('Inflow', places=2)
 
     posting_id = IntegerField()
- 
+
     submit = SubmitField('Save')
