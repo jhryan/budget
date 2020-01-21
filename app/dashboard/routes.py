@@ -21,6 +21,7 @@ from app.dashboard.forms import AddCategoryForm
 from app.dashboard.forms import AddCategoryGroupForm
 from app.dashboard.forms import EditCategoryForm
 from app.dashboard.forms import EditCategoryGroupForm
+from app.dashboard.forms import EditTransactionForm
 from app.models import Account
 from app.models import AssetType
 from app.models import Budget
@@ -227,9 +228,23 @@ def accounts(account_id):
         account = Account.query.filter_by(id=account_id).first()
         if account is None or account.budget.user != current_user:
             abort(401)
+
+    edit_transaction_form = EditTransactionForm()
+
+    categories = []
+    category_groups = Account.query.filter_by(budget=g.budget) \
+        .filter(Account.parent.has(name='Budget')).all()
+    for category_group in category_groups:
+        if category_group != 'Unbudgeted':
+            for category in category_group.children:
+                categories.append((f'{category.name}', f'{category.name}'))
+
+    edit_transaction_form.category.choices = categories
+
     return render_template('dashboard/accounts.html',
                            title='Dashboard',
                            add_account_form=AddAccountForm(g.budget),
+                           edit_transaction_form=edit_transaction_form,
                            user=g.user,
                            budget=g.budget,
                            accounts=g.accounts,
@@ -255,6 +270,33 @@ def add_account():
         return jsonify(data={'message': 'success'})
     return render_template('dashboard/add_account_form.html',
                            add_account_form=form)
+
+
+@bp.route('/<username>/budget/<int:budget_id>/accounts/<int:account_id>/'
+          'edit_transaction', methods=['POST'])
+@login_required
+def edit_transaction(account_id):
+    form = EditTransactionForm()
+    account = None
+    if account_id is not None:
+        account = Account.query.filter_by(id=account_id).first()
+        if account is None or account.budget.user != current_user:
+            abort(401)
+
+    posting = Posting.query.filter(Posting.account == account) \
+        .filter_by(id=form.posting_id.data).first()
+    journal_entry = posting.journal_entry
+
+    if form.date.data != journal_entry.date:
+        journal_entry.date = form.date.data
+    if form.payee.data != journal_entry.payee:
+        journal_entry.payee = form.payee.data
+    if form.description.data != journal_entry.description:
+        journal_entry.description = form.description.data
+
+    db.session.commit()
+
+    return redirect(url_for('dashboard.accounts', account_id=account_id))
 
 
 @bp.route('/<username>/budget/<int:budget_id>/add_category_group',

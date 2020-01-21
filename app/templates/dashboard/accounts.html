@@ -6,10 +6,239 @@
     {% set active_page = 'dashboard.accounts' -%}
 {% endif %}
 
+{% block styles %}
+    {{ super() }}
+
+    <style>
+        header p {
+            font-size: 0.75rem;
+        }
+
+        header p.positive {
+            font-size: 1rem;
+            color: #5bbd78;
+        }
+
+        .account-toolbar {
+            font-size: .9rem;
+        }
+
+        .account-toolbar .feather {
+            width: 16px;
+            height: 16px;
+            vertical-align: middle;
+        }
+
+        .account-toolbar span:hover {
+            color: #212529;
+            cursor: pointer;
+        }
+
+        table {
+            cursor: pointer;
+        }
+
+        table thead tr th {
+            border-right: 1px solid #dee2e6;
+        }
+
+        .custom-control-label {
+            vertical-align: top;
+        }
+
+        .checkbox {
+            width: 0.5rem;
+        }
+
+        tr.active {
+            background-color:#6c757d;
+            color: #fff;
+        }
+
+        td.transaction-date {
+            width: 10%;
+        }
+
+        td.transaction-payee {
+            width: 15%;
+        }
+
+        td.transaction-category {
+            width: 25%;
+        }
+
+        td.transaction-description {
+            width: 25%;
+        }
+
+        td.transaction-outflow {
+            width: 12.5%;
+        }
+
+        td.transaction-inflow {
+            width: 12.5%;
+        }
+    </style>
+{% endblock %}
+
 {% block dashboard_content %}
     {% if account is not none %}
-        <h1>{{ account.name }} Page</h1>
+        <header>
+            <div class="budget-header d-flex py-3 bg-dark text-light">
+                <span class="badge badge-pill badge-success ml-3 d-inline-flex align-items-center justify-content-center">
+                    {{ account.name }}
+                </span>
+                <div class="d-flex flex-column justify-content-center align-items-center ml-3">
+                    <p class="mb-0 font-italic">Working Balance</p>
+                    <p class="mb-0 font-weight-bold positive">$0.00</p>
+                </div>
+            </div>
+            <div class="account-toolbar text-muted p-1">
+                <span data-toggle="modal" data-target="#addTransactionModal">
+                    <span data-feather="plus-circle"></span>
+                    Add Transaction
+                </span>
+            </div>
+        </header>
+
+        <section role="main">
+            <form method="post" action="{{ url_for('dashboard.edit_transaction', account_id=account.id) }}" novalidate>
+                {{ edit_transaction_form.hidden_tag() }}
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th class="checkbox" scope="col">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input">
+                                    <label class="custom-control-label"></label>
+                                </div>
+                            </th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Payee</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Memo</th>
+                            <th scope="col">Outflow</th>
+                            <th scope="col">Inflow</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if account.postings %}
+                    {% for posting in account.postings %}
+                        <tr id="transaction-{{ posting.id }}">
+                            <td>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input">
+                                    <label class="custom-control-label"></label>
+                                </div>
+                            </td>
+                            <td class="transaction-date">{{ moment(posting.journal_entry.date, local=True).format('M/DD/YYYY') }}</td>
+                            <td class="transaction-payee">{{ posting.journal_entry.payee }}</td>
+                            <td class="transaction-category">
+                                {% for journal_entry_posting in posting.journal_entry.postings %}
+                                    {% if journal_entry_posting.amount == -posting.amount %}
+                                        {{ journal_entry_posting.account.name }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td class="transaction-description">
+                                {{ posting.journal_entry.description }}
+                            </td>
+                            <td class="text-right transaction-outflow">
+                                {% if posting.amount < 0 %}
+                                    {{ '$%.2f'|format(-posting.amount) }}
+                                {% endif %}
+                            </td>
+                            <td class="text-right transaction-inflow">
+                                <div>
+                                    {% if posting.amount > 0 %}
+                                        {{ '$%.2f'|format(posting.amount) }}
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            </form>
+        </section>
     {% else %}
         <h1>Accounts Page</h1>
     {% endif %}
+{% endblock %}
+
+{% block scripts %}
+
+    {{ super() }}
+
+    <script>
+        $(function () {
+            $('tbody tr').on('click', function(event) {
+                if (!$(this).hasClass('active') && !$(this).hasClass('editing')) {
+                    $(this).addClass('active');
+                    $(this).find('input[type="checkbox"]').attr("checked", true);
+                } else if ($(this).hasClass('active') && !$(this).hasClass('editing')) {
+                    $(this).addClass('editing');
+                    var header_checkbox = $(this).closest('table').find('thead tr .custom-checkbox input[type="checkbox"]');
+                    header_checkbox.prop('indeterminate', true);
+
+                    var date = $(this).find('.transaction-date');
+                    var timestamp = date.find('span').attr('data-timestamp').slice(0, 10);
+                    date.html('<input id="date" name="date" type="date" class="form-control form-control-sm" placeholder="Date" value=' + timestamp + ' required>');
+
+                    var payee = $(this).find('.transaction-payee');
+                    payee.html('<input id="payee" name="payee" type="text" class="form-control form-control-sm" placeholder="Payee" value=' + payee.text() + '>');
+
+                    var category = $(this).find('.transaction-category');
+                    category.html('<select id="category" name="category"  class="form-control form-control-sm">' + 
+                                        '<option value="' + category.text().trim() + '">' + category.text().trim() + '</option>'+
+                                   '</select>');
+
+                    var description = $(this).find('.transaction-description');
+                    description.html('<input id="description" name="description" type="text" class="form-control form-control-sm" placeholder="memo" value=' + description.text() + '>');
+
+                    var outflow = $(this).find('.transaction-outflow');
+                    outflow.html('<input id="outflow" name="outflow" type="text" class="form-control form-control-sm" placeholder="" value=' + outflow.text() + '>');
+
+                    var inflow = $(this).find('.transaction-inflow');
+                    inflow.html('<div><input id="inflow" name="inflow" type="text" class="form-control form-control-sm" placeholder="" value=' + inflow.text() + '></div>');
+
+                    
+                    $(this).after('<tr class="active editing"><td colspan=7 class="border-top-0"><div class="d-flex justify-content-end">' +
+                                                '<input type="hidden" id="posting_id" name="posting_id" value="' + $(this).attr('id').replace(/transaction-/, '') + '">' +
+                                                '<button type="button" class="btn btn-primary mr-1" onClick="window.location.reload();">Cancel</button>' +
+                                                '<input class="btn btn-primary ml-1" id="submit" type="submit" value="Save"></div></td></tr>');
+                }
+            });
+
+            $('tbody tr .custom-checkbox label').on('click', function (event) {
+                var row = $(this).closest('tbody tr');
+
+                if (row.hasClass('editing')) {
+                    return;
+                } else if (row.hasClass('active')) {
+                    row.removeClass('active');
+                    row.find('input[type="checkbox"]').attr("checked", false);
+                    event.stopPropagation();
+                }
+            });
+
+            $('thead tr .custom-checkbox label').on('click', function (event) {
+                var table = $(this).closest('table');
+                var row = $(this).closest('thead tr');
+                var checkbox =  row.find('input[type="checkbox"]');
+
+                if (table.find('tbody tr.editing').length){
+                    return;
+                } else if (checkbox.attr("checked")) {
+                    table.find('tbody tr').removeClass('active');
+                    table.find('.custom-checkbox input[type="checkbox"]').attr("checked", false);
+                } else {
+                    table.find('tbody tr').addClass('active');
+                    table.find('.custom-checkbox input[type="checkbox"]').attr("checked", true);
+                }
+            });
+        })
+    </script>
+
 {% endblock %}

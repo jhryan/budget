@@ -165,13 +165,17 @@
                                         {% if account.balance(month=month) > 0 %}
                                             <span class="category-activity px-1">{{ '-$%.2f'|format(account.balance(month=month)) }}</span>
                                         {% else %}
-                                            <span class="category-activity px-1">{{ '$%.2f'|format(account.balance(month=month)) }}</span>
+                                            <span class="category-activity px-1">{{ '$%.2f'|format(-account.balance(month=month)) }}</span>
                                         {% endif %}
                                     {% endif %}
                                 {% endfor %}
                             </th>
                             <th>
-                                <span class="category-group-available px-1">{{ '$%.2f'|format(category_group.balance(month=month)) }}</span>
+                                {% if category_group.balance(month=month) > 0 %}
+                                    <span class="category-group-available px-1">{{ '$%.2f'|format(category_group.balance(month=month)) }}</span>
+                                {% else %}
+                                    <span class="category-group-available px-1">{{ '-$%.2f'|format(-category_group.balance(month=month)) }}</span>
+                                {% endif %}
                             </th>
                         </tr>
                         {% for category in category_group.children %}
@@ -190,7 +194,7 @@
                                             {% if account.balance(month=month) > 0 %}
                                                 <span class="category-activity px-1">{{ '-$%.2f'|format(account.balance(month=month)) }}</span>
                                             {% else %}
-                                                <span class="category-activity px-1">{{ '$%.2f'|format(account.balance(month=month)) }}</span>
+                                                <span class="category-activity px-1">{{ '$%.2f'|format(-account.balance(month=month)) }}</span>
                                             {% endif %}
                                         {% endif %}
                                     {% endfor %}
@@ -201,7 +205,13 @@
                                 {% elif category.balance(month=month) < 0 %}
                                     {% set category_available_sign = 'negative' %}
                                 {% endif %}
-                                <td><span class="px-1 category-available {{ category_available_sign }}">{{ '$%.2f'|format(category.balance(month=month)) }}</span></td>
+                                <td>
+                                    {% if category.balance(month=month) > 0 %}
+                                        <span class="px-1 category-available {{ category_available_sign }}">{{ '$%.2f'|format(category.balance(month=month)) }}</span>
+                                    {% else %}
+                                        <span class="px-1 category-available {{ category_available_sign }}">{{ '-$%.2f'|format(-category.balance(month=month)) }}</span>
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -231,7 +241,13 @@
     
         <div class="d-flex flex-column justify-content-end align-items-center py-3">
             <h6 class="text-uppercase text-muted mb-1">Total Available</h6>
-            <h2 class="mb-0">{{ '$%.2f'|format(total_available) }}</h2>
+            <h2 class="mb-0">
+                {% if total_available < 0 %}
+                    {{ '-$%.2f'|format(-total_available) }}
+                {% else %}
+                    {{ '$%.2f'|format(total_available) }}
+                {% endif %}
+            </h2>
         </div>
         <hr class="my-0 mx-5">
     
