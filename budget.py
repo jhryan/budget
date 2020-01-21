@@ -14,8 +14,8 @@ app = create_app()
 @app.shell_context_processor
 def make_shell_context():
     return {
-        'db': db, 
-        'Account': Account, 
+        'db': db,
+        'Account': Account,
         'AssetType': AssetType,
         'Budget': Budget,
         'Journal': Journal,
@@ -23,5 +23,7 @@ def make_shell_context():
         'User': User
     }
 
+
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=80, ssl_context=('certs/cert.pem', 'certs/key.pem'))
+    app.run(debug=True, host='0.0.0.0', port=80,
+            ssl_context=('certs/cert.pem', 'certs/key.pem'))

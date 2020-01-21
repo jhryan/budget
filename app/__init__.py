@@ -3,9 +3,7 @@ from logging.handlers import RotatingFileHandler
 from logging.handlers import SMTPHandler
 import os
 
-from flask import current_app
 from flask import Flask
-from flask import request
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -87,5 +85,6 @@ def create_app(config_class=Config):
         app.logger.info('Budget startup')
 
     return app
+
 
 from app import models
